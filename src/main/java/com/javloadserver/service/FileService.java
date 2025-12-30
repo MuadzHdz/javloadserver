@@ -38,6 +38,7 @@ public class FileService {
             try (Stream<Path> stream = Files.list(currentDir)) {
                 return stream
                     .filter(Files::isDirectory)
+                    .filter(path -> !path.getFileName().toString().startsWith("."))
                     .map(path -> path.getFileName().toString())
                     .sorted(String.CASE_INSENSITIVE_ORDER)
                     .toList();
@@ -59,6 +60,7 @@ public class FileService {
             try (Stream<Path> stream = Files.list(currentDir)) {
                 return stream
                     .filter(Files::isRegularFile)
+                    .filter(path -> !path.getFileName().toString().startsWith("."))
                     .map(path -> path.getFileName().toString())
                     .sorted(String.CASE_INSENSITIVE_ORDER)
                     .toList();
@@ -134,7 +136,8 @@ public class FileService {
             return "";
         }
         
-        return filename.replaceAll("[^a-zA-Z0-9.-_]", "_");
+        // Remove dangerous characters but allow spaces, international chars, and common file characters
+        return filename.replaceAll("[\\\\/:*?\"<>|]", "_");
     }
 
     public Path getBaseDirectory() {

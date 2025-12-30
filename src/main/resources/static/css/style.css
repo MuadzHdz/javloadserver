@@ -835,19 +835,7 @@ footer a:hover {
         max-height: 720px;
     }
 
-    .container.login-container {
-        max-width: 400px;
-        padding: 2.5rem 2rem;
-        margin: auto; 
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        min-height: auto;
-        max-height: auto;
-        overflow: visible;
-        width: 90%; 
-    }
+
 
     .container.login-container {
         max-width: 400px;

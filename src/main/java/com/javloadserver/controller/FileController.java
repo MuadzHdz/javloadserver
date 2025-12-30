@@ -4,7 +4,10 @@ import com.javloadserver.service.FileService;
 import com.javloadserver.UploadServerApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
@@ -29,21 +32,16 @@ public class FileController {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:/browse/";
+        return "redirect:/browse";
     }
 
-    @GetMapping("/browse/")
-    public String browseEmpty(Model model, HttpServletRequest request) {
-        return browse("", model, request);
-    }
-
-    @GetMapping("/browse/{path:**}")
-    public String browse(@PathVariable String path, Model model, HttpServletRequest request) {
+    @GetMapping("/browse")
+    public String browse(@RequestParam(required = false) String path, Model model, HttpServletRequest request) {
         if (path == null) path = "";
 
         if (!fileService.directoryExists(path)) {
             model.addAttribute("error", "Error: Invalid or inaccessible directory.");
-            return "redirect:/browse/";
+            return "redirect:/browse";
         }
 
         List<String> dirs = fileService.listDirectories(path);
@@ -60,36 +58,36 @@ public class FileController {
         return "index";
     }
 
-    @PostMapping("/upload/")
-    public String uploadToRoot(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-        return uploadFile(file, "", redirectAttributes);
-    }
-
-    @PostMapping("/upload/{path:**}")
-    public String uploadFile(@RequestParam("file") MultipartFile file, @PathVariable String path, RedirectAttributes redirectAttributes) {
+    @PostMapping("/upload")
+    public String uploadFile(@RequestParam("file") MultipartFile file, 
+                         @RequestParam(required = false) String path, 
+                         RedirectAttributes redirectAttributes) {
         if (path == null) path = "";
 
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "No file selected.");
-            return "redirect:/browse/" + (path.isEmpty() ? "" : path);
+            return "redirect:/browse?path=" + path;
         }
 
         try {
             String filename = fileService.uploadFile(file, path);
             redirectAttributes.addFlashAttribute("success", 
-                "File \"" + filename + "\" uploaded successfully to /" + path + "!");
+                "File \"" + filename + "\" uploaded successfully to " + (path.isEmpty() ? "/" : "/" + path) + "!");
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("error", "Error saving file: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
-        return "redirect:/browse/" + (path.isEmpty() ? "" : path);
+        return "redirect:/browse?path=" + path;
     }
 
-    @GetMapping("/download/{filename:**}")
+    @GetMapping("/download")
     @ResponseBody
-    public ResponseEntity<Object> serveFile(@PathVariable String filename) {
+    public ResponseEntity<Object> serveFile(@RequestParam String filename) {
+        if (filename == null || filename.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Filename not provided");
+        }
         try {
             Path filePath = fileService.getFilePath(filename);
             return ResponseEntity.ok()

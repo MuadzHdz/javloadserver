@@ -63,7 +63,7 @@ public class ServerConfig {
                     openBrowser = true;
                     break;
                 case "--version":
-                    System.out.println("uploadserver 1.2.0");
+                    System.out.println("javloadserver 1.1.0");
                     System.exit(0);
                     break;
                 case "-h":
@@ -76,14 +76,20 @@ public class ServerConfig {
     }
 
     private String promptForPassword() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter password: ");
-        try {
-            return scanner.nextLine();
-        } catch (Exception e) {
-            System.err.println("Error reading password");
-            System.exit(1);
-            return "";
+        java.io.Console console = System.console();
+        if (console != null) {
+            return new String(console.readPassword("Enter password: "));
+        } else {
+            // Fallback to scanner if console is not available (e.g., in some IDEs)
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter password: ");
+            try {
+                return scanner.nextLine();
+            } catch (Exception e) {
+                System.err.println("Error reading password");
+                System.exit(1);
+                return "";
+            }
         }
     }
 
@@ -113,9 +119,9 @@ public class ServerConfig {
     }
 
     private void displayHelp() {
-        System.out.println("UploadServer - A simple, modern file server with upload, password protection, and QR code access");
+        System.out.println("JavloadServer - A simple, modern file server with upload, password protection, and QR code access");
         System.out.println();
-        System.out.println("Usage: java -jar uploadserver.jar [OPTIONS]");
+        System.out.println("Usage: java -jar javloadserver-1.1.0.jar [OPTIONS]");
         System.out.println();
         System.out.println("Options:");
         System.out.println("  -d, --directory DIR    The directory to serve files from and save uploads to");

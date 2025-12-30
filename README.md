@@ -11,13 +11,14 @@ This project was born out of a desire for a tool that is as easy to run as Pytho
 ## Key Features
 
 - **Simple File Sharing**: Serve files and directories instantly from any folder
-- **File Upload**: Allow users to upload files directly to server through a web form
-- **Password Protection**: Secure your server with a password using Spring Security
+- **File Upload**: Allow users to upload files directly to server through a web form with drag & drop support
+- **Password Protection**: Secure your server with a password using Spring Security with secure password input masking
 - **QR Code Access**: Instantly get a QR code in your terminal to access server from mobile device
 - **Customizable Themes**: Change visual theme of web interface using an interactive slider carousel (15+ themes)
 - **Modern UI**: A clean, dark-themed, and responsive web interface that looks great on both desktop and mobile
-- **Enterprise Grade**: Built with Spring Boot for production-ready performance and security
+- **Enterprise Grade**: Built with Spring Boot for production-ready performance and security with CSRF protection
 - **Cross-Platform**: Runs anywhere Java 17+ is installed
+- **Security Features**: Path validation, filename sanitization, hidden files filtering, and CSRF protection
 
 ---
 
@@ -26,7 +27,7 @@ This project was born out of a desire for a tool that is as easy to run as Pytho
 When you start the server, you get a clean and informative output right in your terminal:
 
 ```sh
-$ java -jar uploadserver.jar --password
+$ java -jar javloadserver-1.1.0.jar --password
 
 ==================================================
 JavloadServer Started Successfully!
@@ -42,6 +43,41 @@ Scan the QR code to connect:
 █████████████████████████████████████
 █████████████████████████████████████
 ```
+
+---
+## Changelog
+
+### Version 1.1.0 (Current Release)
+**🔥 Major Updates & Security Improvements:**
+
+**NEW FEATURES:**
+- ✅ Enhanced drag & drop file upload functionality
+- ✅ Secure password input with masking for CLI
+- ✅ Hidden files filtering (no more .bashrc, .git files in listing)
+- ✅ CSRF protection enabled for security
+- ✅ Improved filename sanitization (supports spaces and international chars)
+- ✅ Production-ready logging configuration
+- ✅ Optimized CSS with duplicate rules removal
+
+**BUG FIXES:**
+- 🐛 Fixed JavaScript drag & drop (`drafeave` → `dragleave`)
+- 🐛 Fixed Thymeleaf theme initialization (`data-th-data-theme` → `data-theme`)
+- 🐛 Fixed file upload 404 errors with proper URL routing
+- 🐛 Fixed CLI version display (`uploadserver` → `javloadserver`)
+- 🐛 Fixed security configuration for consistent CSRF handling
+
+**SECURITY ENHANCEMENTS:**
+- 🔐 Password masking in CLI to prevent shoulder surfing
+- 🛡️ CSRF protection for cross-site request forgery prevention
+- 🔒 Path traversal protection with validation
+- 📁 Hidden files filtering for cleaner interface
+- 🧹 Filename sanitization to prevent malicious uploads
+
+**IMPROVEMENTS:**
+- ⚡ Optimized imports for better compilation
+- 📊 Reduced logging overhead in production
+- 🎨 Cleaner UI with proper file/folder icons
+- 🏗️ Better code structure and error handling
 
 ---
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-th-data-theme="${theme}" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:data-theme="${theme}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +38,7 @@
                     </li>
                     <li th:each="file : ${files}">
                         <a th:href="@{/download(filename=${#strings.isEmpty(current_path) ? file : current_path + '/' + file})}">
-                            <span class="material-icons">insert_drive_file</span>&nbsp;&nbsp;&nbsp;<span th:text="${file}"></span>
+                            <span class="material-icons">description</span>&nbsp;&nbsp;<span th:text="${file}"></span>
                         </a>
                     </li>
                 </ul>
@@ -48,10 +48,11 @@
             <div class="upload-section">
                 <h2>Upload</h2>
 
-                <form th:action="@{/upload(path=${current_path})}" method="post" enctype="multipart/form-data" id="upload-form">
+                <form th:action="@{/upload(path=${#strings.isEmpty(current_path) ? '' : current_path})}" method="post" enctype="multipart/form-data" id="upload-form">
                     <label for="file-input" class="file-input-label" id="drop-area">
                         <span class="material-icons">cloud_upload</span> Drag & Drop files here or Click to select
                     </label>
+
                     <input type="file" name="file" id="file-input" required>
                     <button type="submit" class="btn">Upload</button>
                 </form>
