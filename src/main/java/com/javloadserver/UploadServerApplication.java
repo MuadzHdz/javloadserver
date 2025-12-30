@@ -1,4 +1,4 @@
-package com.uploadserver;
+package com.javloadserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -37,15 +37,15 @@ public class UploadServerApplication {
     private void displayServerInfo() {
         String url = "http://" + serverConfig.getHost() + ":" + serverConfig.getPort();
         System.out.println("\n" + "=".repeat(50));
-        System.out.println("🚀 UploadServer Started Successfully!");
-        System.out.println("📍 Server URL: " + url);
-        System.out.println("📂 Serving Directory: " + serverConfig.getDirectory());
-        System.out.println("🔐 Password Protection: " + (serverConfig.hasPassword() ? "Enabled" : "Disabled"));
+        System.out.println("JavloadServer Started Successfully!");
+        System.out.println("Server URL: " + url);
+        System.out.println("Serving Directory: " + serverConfig.getDirectory());
+        System.out.println("Password Protection: " + (serverConfig.hasPassword() ? "Enabled" : "Disabled"));
         System.out.println("=".repeat(50));
         
         if (serverConfig.hasPassword()) {
-            System.out.println("\n🔑 Access the server at: " + url);
-            System.out.println("🔐 Authentication: Password is required");
+        System.out.println("\nAccess the server at: " + url);
+        System.out.println("Authentication: Password is required");
         }
         
         displayQRCode(url);
@@ -55,8 +55,8 @@ public class UploadServerApplication {
         try {
             QRCodeGenerator.displayQRCode(url);
         } catch (Exception e) {
-            System.out.println("\n⚠️  Could not generate QR code: " + e.getMessage());
-            System.out.println("💡 To display QR codes, ensure the required libraries are available.");
+            System.out.println("\nCould not generate QR code: " + e.getMessage());
+            System.out.println("To display QR codes, ensure the required libraries are available.");
         }
     }
 
@@ -67,7 +67,7 @@ public class UploadServerApplication {
                 Desktop.getDesktop().browse(URI.create(url));
             }
         } catch (IOException e) {
-            System.out.println("⚠️  Could not open browser: " + e.getMessage());
+            System.out.println("Could not open browser: " + e.getMessage());
         }
     }
 

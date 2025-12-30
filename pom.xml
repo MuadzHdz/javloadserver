@@ -12,10 +12,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.uploadserver</groupId>
-    <artifactId>uploadserver</artifactId>
-    <version>1.2.0</version>
-    <name>uploadserver</name>
+    <groupId>com.javloadserver</groupId>
+    <artifactId>javloadserver</artifactId>
+    <version>1.1.0</version>
+    <name>javloadserver</name>
     <description>A simple, modern file server with upload, password protection, and QR code access</description>
 
     <properties>
@@ -86,7 +86,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.uploadserver.UploadServerApplication</mainClass>
+                    <mainClass>com.javloadserver.UploadServerApplication</mainClass>
                 </configuration>
             </plugin>
             

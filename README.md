@@ -1,4 +1,4 @@
-# Upload Server
+# JavloadServer
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![Java versions](https://img.shields.io/badge/Java-17+-orange.svg)](https://openjdk.org/)[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
@@ -8,7 +8,7 @@ This project was born out of a desire for a tool that is as easy to run as Pytho
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 - **Simple File Sharing**: Serve files and directories instantly from any folder
 - **File Upload**: Allow users to upload files directly to server through a web form
@@ -21,7 +21,7 @@ This project was born out of a desire for a tool that is as easy to run as Pytho
 
 ---
 
-## 🎬 Demo
+## Demo
 
 When you start the server, you get a clean and informative output right in your terminal:
 
@@ -29,13 +29,13 @@ When you start the server, you get a clean and informative output right in your 
 $ java -jar uploadserver.jar --password
 
 ==================================================
-🚀 UploadServer Started Successfully!
-📍 Server URL: http://192.168.1.100:8000
-📂 Serving Directory: /home/user/documents
-🔐 Password Protection: Enabled
+JavloadServer Started Successfully!
+Server URL: http://192.168.1.100:8000
+Serving Directory: /home/user/documents
+Password Protection: Enabled
 ==================================================
 
-📱 Scan the QR code to connect:
+Scan the QR code to connect:
 █████████████████████████████████████
 █████████████████████████████████████
 █████████████████████████████████████
@@ -45,7 +45,7 @@ $ java -jar uploadserver.jar --password
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -54,21 +54,21 @@ $ java -jar uploadserver.jar --password
 
 ### Option 1: Download Pre-built JAR
 
-1. Download the latest release from [Releases](https://github.com/MuadzHdz/uploadserver/releases)
+1. Download the latest release from [Releases](https://github.com/MuadzHdz/javloadserver/releases)
 2. Run the JAR file:
    ```bash
-   java -jar uploadserver-1.2.0.jar
+    java -jar javloadserver-1.1.0.jar
    ```
 
 ### Option 2: Build from Source
 
 1. **Clone Repository:** 
     ```bash
-    git clone https://github.com/MuadzHdz/uploadserver.git
+    git clone https://github.com/MuadzHdz/javloadserver.git
     ```
 
     ```bash
-    cd uploadserver
+    cd javloadserver
     ```
     
 2. **Build Project:** 
@@ -78,17 +78,17 @@ $ java -jar uploadserver.jar --password
     
 3. **Run the Application:**
     ```bash
-    java -jar target/uploadserver-1.2.0.jar
+    java -jar target/javloadserver-1.1.0.jar
     ```
 
 ---
 
-## 🎯 Usage
+## Usage
 
 The most basic way to start the server is to just run the command. It will serve the current directory on port 8000.
 
 ```bash
-java -jar uploadserver.jar
+java -jar javloadserver.jar
 ```
 
 ### Command-Line Options
@@ -107,17 +107,17 @@ java -jar uploadserver.jar
 
 - **Serve current folder and open it in a browser:**
     ```bash
-    java -jar uploadserver.jar -o
+    java -jar javloadserver.jar -o
     ```
     
 - **Serve a specific folder on a different port:**
     ```bash
-    java -jar uploadserver.jar -d /home/user/shared -p 8080
+    java -jar javloadserver.jar -d /home/user/shared -p 8080
     ```
     
 - **Protect the server with a password (you will be prompted to enter one):**
     ```bash
-    java -jar uploadserver.jar --password
+    java -jar javloadserver.jar --password
     ```
     
 - **Set a password directly from the command line (less secure, avoid in scripts):**
@@ -127,7 +127,7 @@ java -jar uploadserver.jar
 
 ---
 
-## 🎨 Available Themes
+## Available Themes
 
 The application includes 15+ beautiful themes:
 
@@ -138,7 +138,7 @@ Switch between themes using the carousel at the bottom of the web interface.
 
 ---
 
-## 🔧 Technology Stack
+## Technology Stack
 
 - **Backend**: Spring Boot 3.2.0
 - **Security**: Spring Security 6.2.0
@@ -150,7 +150,7 @@ Switch between themes using the carousel at the bottom of the web interface.
 
 ---
 
-## 🔒 Security Features
+## Security Features
 
 - **Password Protection**: Optional authentication using Spring Security
 - **Path Validation**: Prevents directory traversal attacks
@@ -160,10 +160,10 @@ Switch between themes using the carousel at the bottom of the web interface.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-src/main/java/com/uploadserver/
+src/main/java/com/javloadserver/
 ├── UploadServerApplication.java    # Main application class
 ├── ServerConfig.java              # Command-line argument handling
 ├── QRCodeGenerator.java           # QR code generation
@@ -188,7 +188,7 @@ src/main/resources/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! If you have ideas for new features, bug reports, or improvements, please feel free to:
 
@@ -207,7 +207,7 @@ Please ensure your changes align with the project's goals of simplicity, securit
 
 ---
 
-## 📜 Migration from Python
+## Migration from Python
 
 This project was originally written in Python Flask and has been completely rewritten in Java Spring Boot for better performance, security, and maintainability. The Java version maintains full feature parity with the Python version while adding:
 
@@ -219,13 +219,13 @@ This project was originally written in Python Flask and has been completely rewr
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 - **Mu'adz**
   - GitHub: [@MuadzHdz](https://github.com/MuadzHdz)
@@ -233,7 +233,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 
 ---
 
-## ⭐ Acknowledgments
+## Acknowledgments
 
 - [Spring Boot](https://spring.io/projects/spring-boot) for the amazing framework
 - [ZXing](https://github.com/zxing/zxing) for QR code generation

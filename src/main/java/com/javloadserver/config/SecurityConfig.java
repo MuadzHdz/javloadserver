@@ -1,7 +1,7 @@
-package com.uploadserver.config;
+package com.javloadserver.config;
 
-import com.uploadserver.ServerConfig;
-import com.uploadserver.UploadServerApplication;
+import com.javloadserver.ServerConfig;
+import com.javloadserver.UploadServerApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

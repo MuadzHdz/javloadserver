@@ -1,4 +1,4 @@
-package com.uploadserver;
+package com.javloadserver;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -20,7 +20,7 @@ public class QRCodeGenerator {
             50
         );
 
-        System.out.println("\n📱 Scan the QR code to connect:");
+        System.out.println("\nScan the QR code to connect:");
         
         String asciiQR = convertToASCII(bitMatrix);
         System.out.println(asciiQR);

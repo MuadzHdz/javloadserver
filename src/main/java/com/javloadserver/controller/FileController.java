@@ -1,7 +1,7 @@
-package com.uploadserver.controller;
+package com.javloadserver.controller;
 
-import com.uploadserver.service.FileService;
-import com.uploadserver.UploadServerApplication;
+import com.javloadserver.service.FileService;
+import com.javloadserver.UploadServerApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.uploadserver;
+package com.javloadserver;
 
 import java.io.File;
 import java.net.InetAddress;
