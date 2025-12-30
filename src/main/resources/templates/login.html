@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ theme }}">
+<html lang="en" data-th-data-theme="${theme}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - uploadserver</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         .login-container {
@@ -35,8 +35,6 @@
             background: transparent;
         }
         
-
-        
         .input-group {
             position: relative;
             width: 100%;
@@ -58,8 +56,6 @@
             text-align: center;
         }
 
-
-
         .top-bar {
             display: none;
         }
@@ -73,7 +69,11 @@
         </header>
 
         <main>
-            <form method="post" action="{{ url_for('login') }}">
+            <form th:action="@{/login}" method="post">
+                <div class="input-group">
+                    <span class="material-icons">person</span>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
                 <div class="input-group">
                     <span class="material-icons">vpn_key</span>
                     <input type="password" id="password" name="password" placeholder="Enter password" required>
@@ -83,15 +83,18 @@
                     <span class="material-icons">login</span> Login
                 </button>
             </form>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <ul class="flashes">
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            
+            <div th:if="${param.error}" class="flashes">
+                <ul class="flashes">
+                    <li class="error">Incorrect username or password.</li>
+                </ul>
+            </div>
+            
+            <div th:if="${param.logout}" class="flashes">
+                <ul class="flashes">
+                    <li class="success">You have been logged out.</li>
+                </ul>
+            </div>
         </main>
     </div>
 
@@ -101,7 +104,7 @@
         <button id="theme-next" class="theme-btn" aria-label="Next theme">&gt;</button>
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script th:src="@{/js/script.js}"></script>
     <script>
         function togglePassword() {
             const passwordInput = document.getElementById('password');

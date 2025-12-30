@@ -31,5 +31,15 @@ venv.bak/
 *.swo
 *.swn
 
+# Java/Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+.mvn/
+mvnw*
+.mvn/wrapper/
+
 # Other
 .DS_Store
