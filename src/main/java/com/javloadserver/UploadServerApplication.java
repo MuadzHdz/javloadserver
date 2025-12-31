@@ -63,11 +63,52 @@ public class UploadServerApplication {
     private void openBrowser() {
         try {
             String url = "http://" + serverConfig.getHost() + ":" + serverConfig.getPort();
+            boolean opened = false;
+            
+            // Try Desktop API first
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(URI.create(url));
+                opened = true;
+                System.out.println("Opened browser at: " + url);
+            } else {
+                // Fallback to system-specific commands
+                String os = System.getProperty("os.name").toLowerCase();
+                ProcessBuilder pb;
+                
+                if (os.contains("linux")) {
+                    // Try common Linux browsers
+                    String[] browsers = {"xdg-open", "google-chrome", "firefox", "mozilla", "opera"};
+                    for (String browser : browsers) {
+                        try {
+                            pb = new ProcessBuilder(browser, url);
+                            pb.start();
+                            opened = true;
+                            System.out.println("Opened browser using: " + browser);
+                            break;
+                        } catch (Exception e) {
+                            // Try next browser
+                        }
+                    }
+                } else if (os.contains("mac")) {
+                    pb = new ProcessBuilder("open", url);
+                    pb.start();
+                    opened = true;
+                    System.out.println("Opened browser using: open");
+                } else if (os.contains("windows")) {
+                    pb = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", url);
+                    pb.start();
+                    opened = true;
+                    System.out.println("Opened browser using: rundll32");
+                }
+                
+                if (!opened) {
+                    System.out.println("Could not automatically open browser. Please visit: " + url);
+                    System.out.println("Tip: Make sure you have a default browser set up.");
+                }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Could not open browser: " + e.getMessage());
+            System.out.println("Please manually visit: http://" + serverConfig.getHost() + ":" + serverConfig.getPort());
         }
     }
 
