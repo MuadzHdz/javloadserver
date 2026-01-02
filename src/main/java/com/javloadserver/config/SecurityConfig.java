@@ -30,7 +30,7 @@ public class SecurityConfig {
         if (serverConfig.hasPassword()) {
             http
                 .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/login", "/static/**", "/css/**", "/js/**").permitAll()
+                    .requestMatchers("/login", "/static/**", "/css/**", "/js/**", "/health", "/api/**").permitAll()
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -42,10 +42,16 @@ public class SecurityConfig {
                     .logoutUrl("/logout")
                     .logoutSuccessUrl("/login?logout")
                     .permitAll()
+                    .clearAuthentication(true)
+                    .invalidateHttpSession(true)
                 )
                 .sessionManagement(session -> session
                     .maximumSessions(1)
                     .maxSessionsPreventsLogin(false)
+                    .sessionRegistry(sessionRegistry())
+                )
+                .csrf(csrf -> csrf
+                    .ignoringRequestMatchers("/upload", "/api/**")
                 );
         } else {
             http
@@ -56,7 +62,7 @@ public class SecurityConfig {
                     .disable()
                 )
                 .csrf(csrf -> csrf
-                    .disable()
+                    .ignoringRequestMatchers("/upload", "/api/**")
                 );
         }
 
@@ -86,5 +92,10 @@ public class SecurityConfig {
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+    @Bean
+    public org.springframework.security.core.session.SessionRegistry sessionRegistry() {
+        return new org.springframework.security.core.session.SessionRegistryImpl();
     }
 }

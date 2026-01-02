@@ -204,5 +204,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateColorPaletteDisplay();
 
+    // Add long press functionality for file preview
+    const fileLinks = document.querySelectorAll('a[href*="/download"]');
+    
+    fileLinks.forEach(link => {
+        let pressTimer;
+        let isLongPress = false;
+        let touchStartTime = 0;
+        
+        const startPress = (e) => {
+            isLongPress = false;
+            touchStartTime = Date.now();
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                // Convert download URL to preview URL
+                const previewUrl = link.href.replace('/download?', '/preview?');
+                
+                // Show visual feedback
+                link.style.backgroundColor = 'var(--primary)';
+                link.style.color = 'var(--bg)';
+                
+                // Open in new tab for preview
+                window.open(previewUrl, '_blank');
+                
+                // Reset style after a short delay
+                setTimeout(() => {
+                    link.style.backgroundColor = '';
+                    link.style.color = '';
+                }, 300);
+            }, 1000); // 1 second long press
+        };
+        
+        const cancelPress = () => {
+            clearTimeout(pressTimer);
+            isLongPress = false;
+            // Reset style if not triggered
+            link.style.backgroundColor = '';
+            link.style.color = '';
+        };
+        
+        // Touch events for mobile
+        link.addEventListener('touchstart', startPress, { passive: true });
+        link.addEventListener('touchend', (e) => {
+            cancelPress();
+            
+            // If it was a long press, prevent default click behavior
+            if (isLongPress) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        link.addEventListener('touchcancel', cancelPress);
+        
+        // Mouse events for desktop
+        link.addEventListener('mousedown', startPress);
+        link.addEventListener('mouseup', cancelPress);
+        link.addEventListener('mouseleave', cancelPress);
+        
+        // Prevent context menu on long press
+        link.addEventListener('contextmenu', (e) => {
+            if (isLongPress) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Add hover effect for better UX
+        link.addEventListener('mouseenter', () => {
+            if (!isLongPress) {
+                link.style.transform = 'translateX(4px)';
+            }
+        });
+        
+        link.addEventListener('mouseleave', () => {
+            if (!isLongPress) {
+                link.style.transform = '';
+            }
+        });
+    });
 
 });

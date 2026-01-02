@@ -24,7 +24,7 @@ import java.util.List;
 @Controller
 public class FileController {
 
-    private final FileService fileService;
+    protected final FileService fileService;
 
     public FileController() {
         this.fileService = new FileService(UploadServerApplication.getServerConfig().getDirectory());
@@ -64,11 +64,6 @@ public class FileController {
                          RedirectAttributes redirectAttributes) {
         if (path == null) path = "";
 
-        if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "No file selected.");
-            return "redirect:/browse?path=" + path;
-        }
-
         try {
             String filename = fileService.uploadFile(file, path);
             redirectAttributes.addFlashAttribute("success", 
@@ -90,8 +85,55 @@ public class FileController {
         }
         try {
             Path filePath = fileService.getFilePath(filename);
+            String originalFilename = filePath.getFileName().toString();
+            
+            // Get specific content type based on file extension
+            String contentType = getSpecificContentType(originalFilename);
+            
             return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "attachment; filename=\"" + originalFilename + "\"")
+                .header("X-Content-Type-Options", "nosniff")
+                .header("Content-Transfer-Encoding", "binary")
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+                .header("Access-Control-Allow-Headers", "Content-Type")
+                .body(new org.springframework.core.io.FileSystemResource(filePath.toFile()));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/preview")
+    @ResponseBody
+    public ResponseEntity<Object> previewFile(@RequestParam String filename) {
+        if (filename == null || filename.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Filename not provided");
+        }
+        try {
+            Path filePath = fileService.getFilePath(filename);
+            String originalFilename = filePath.getFileName().toString();
+            
+            // Get specific content type based on file extension
+            String contentType = getSpecificContentType(originalFilename);
+            
+            // Use inline disposition for preview
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "inline; filename=\"" + originalFilename + "\"")
+                .header("X-Content-Type-Options", "nosniff")
+                .header("Content-Transfer-Encoding", "binary")
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+                .header("Access-Control-Allow-Headers", "Content-Type")
                 .body(new org.springframework.core.io.FileSystemResource(filePath.toFile()));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -125,5 +167,96 @@ public class FileController {
             }
         }
         return "tokyo-night";
+    }
+    
+    private String getSpecificContentType(String filename) {
+        String lowerFilename = filename.toLowerCase();
+        
+        // Images
+        if (lowerFilename.endsWith(".jpg") || lowerFilename.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (lowerFilename.endsWith(".png")) {
+            return "image/png";
+        } else if (lowerFilename.endsWith(".gif")) {
+            return "image/gif";
+        } else if (lowerFilename.endsWith(".webp")) {
+            return "image/webp";
+        } else if (lowerFilename.endsWith(".svg")) {
+            return "image/svg+xml";
+        }
+        
+        // Videos
+        else if (lowerFilename.endsWith(".mp4")) {
+            return "video/mp4";
+        } else if (lowerFilename.endsWith(".avi")) {
+            return "video/x-msvideo";
+        } else if (lowerFilename.endsWith(".mov")) {
+            return "video/quicktime";
+        } else if (lowerFilename.endsWith(".wmv")) {
+            return "video/x-ms-wmv";
+        } else if (lowerFilename.endsWith(".flv")) {
+            return "video/x-flv";
+        } else if (lowerFilename.endsWith(".webm")) {
+            return "video/webm";
+        }
+        
+        // Audio
+        else if (lowerFilename.endsWith(".mp3")) {
+            return "audio/mpeg";
+        } else if (lowerFilename.endsWith(".wav")) {
+            return "audio/wav";
+        } else if (lowerFilename.endsWith(".ogg")) {
+            return "audio/ogg";
+        } else if (lowerFilename.endsWith(".m4a")) {
+            return "audio/mp4";
+        } else if (lowerFilename.endsWith(".flac")) {
+            return "audio/flac";
+        }
+        
+        // Documents
+        else if (lowerFilename.endsWith(".pdf")) {
+            return "application/pdf";
+        } else if (lowerFilename.endsWith(".doc")) {
+            return "application/msword";
+        } else if (lowerFilename.endsWith(".docx")) {
+            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        } else if (lowerFilename.endsWith(".xls")) {
+            return "application/vnd.ms-excel";
+        } else if (lowerFilename.endsWith(".xlsx")) {
+            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        } else if (lowerFilename.endsWith(".ppt")) {
+            return "application/vnd.ms-powerpoint";
+        } else if (lowerFilename.endsWith(".pptx")) {
+            return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        }
+        
+        // Archives
+        else if (lowerFilename.endsWith(".zip")) {
+            return "application/zip";
+        } else if (lowerFilename.endsWith(".rar")) {
+            return "application/x-rar-compressed";
+        } else if (lowerFilename.endsWith(".7z")) {
+            return "application/x-7z-compressed";
+        } else if (lowerFilename.endsWith(".tar")) {
+            return "application/x-tar";
+        } else if (lowerFilename.endsWith(".gz")) {
+            return "application/gzip";
+        }
+        
+        // Text files
+        else if (lowerFilename.endsWith(".txt")) {
+            return "text/plain";
+        } else if (lowerFilename.endsWith(".json")) {
+            return "application/json";
+        } else if (lowerFilename.endsWith(".xml")) {
+            return "application/xml";
+        } else if (lowerFilename.endsWith(".csv")) {
+            return "text/csv";
+        }
+        
+        // Default to safe binary type
+        else {
+            return "application/download";
+        }
     }
 }
