@@ -30,7 +30,8 @@ public class SecurityConfig {
         if (serverConfig.hasPassword()) {
             http
                 .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/login", "/static/**", "/css/**", "/js/**", "/health", "/api/**").permitAll()
+                    .requestMatchers("/login", "/static/**", "/css/**", "/js/**", "/health", "/api", "/api/**", 
+                                    "/upload/chunk/**", "/upload").permitAll()
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

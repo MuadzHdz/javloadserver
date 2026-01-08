@@ -18,7 +18,7 @@ public class HealthController {
         return response;
     }
 
-    @GetMapping("/")
+    @GetMapping("/api")
     public Map<String, Object> apiInfo() {
         Map<String, Object> response = new HashMap<>();
         response.put("application", "JavloadServer");
@@ -29,7 +29,8 @@ public class HealthController {
             "download", "/download",
             "upload", "/upload",
             "preview", "/preview",
-            "health", "/health"
+            "health", "/health",
+            "api", "/api"
         ));
         return response;
     }

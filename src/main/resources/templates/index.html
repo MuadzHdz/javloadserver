@@ -50,12 +50,31 @@
 
                 <form th:action="@{/upload(path=${#strings.isEmpty(current_path) ? '' : current_path})}" method="post" enctype="multipart/form-data" id="upload-form">
                     <label for="file-input" class="file-input-label" id="drop-area">
-                        <span class="material-icons">cloud_upload</span> Drag & Drop files here or Click to select
+                        <span class="material-icons">cloud_upload</span> 
+                        <span id="upload-text">Drag & Drop files here or Click to select</span>
+                        <span class="upload-hint">Supports files up to 1000MB (1GB). Multiple files allowed.</span>
                     </label>
 
-                    <input type="file" name="file" id="file-input" required>
-                    <button type="submit" class="btn">Upload</button>
+                    <input type="file" name="file" id="file-input" required multiple>
+                    <button type="submit" class="btn" id="upload-btn">
+                        <span class="btn-icon material-icons">upload</span>
+                        <span class="btn-text">Upload Files</span>
+                    </button>
                 </form>
+
+                <!-- Progress Bar -->
+                <div id="upload-progress-container" style="display: none;">
+                    <div class="progress-info">
+                        <span id="progress-filename">Uploading...</span>
+                        <span id="progress-percentage">0%</span>
+                        <span id="progress-size">0 MB / 0 MB</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div id="upload-status" class="upload-status"></div>
+                    <button id="cancel-upload" class="btn cancel-btn" style="display: none;">Cancel Upload</button>
+                </div>
 
                 <div th:if="${error}" class="flashes">
                     <ul class="flashes">
