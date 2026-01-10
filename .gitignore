@@ -41,5 +41,10 @@ target/
 mvnw*
 .mvn/wrapper/
 
+# IDE
+.classpath
+.project
+.settings/
+
 # Other
 .DS_Store

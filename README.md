@@ -66,6 +66,7 @@ JavloadServer is a sophisticated file sharing solution that combines the simplic
 - **Smart Duplicate Handling**
 - **Cross-Platform Compatibility**
 - **International Filename Support**
+- **1GB Upload Limit** - Maximum file size: 1000MB
 
 ---
 
@@ -74,21 +75,34 @@ JavloadServer is a sophisticated file sharing solution that combines the simplic
 ### Prerequisites
 - **Java 17+** (OpenJDK, Oracle Java, or compatible)
 - **Maven 3.6+** (for building from source)
+- **Git** (for cloning the repository)
 
-### Option 1: Download & Run
+### Option 1: Download & Run (Recommended for Users)
 
+#### Download Latest Release
 ```bash
-# Download latest release
+# Download the latest release JAR
 wget https://github.com/MuadzHdz/javloadserver/releases/download/v1.1.0/javloadserver-1.1.0.jar
 
-# Run with defaults
+# Run with default settings
 java -jar javloadserver-1.1.0.jar
 
-# Run with password protection
-java -jar javloadserver-1.1.0.jar --password
+# Run with custom settings
+java -jar javloadserver-1.1.0.jar --password mysecretpass --port 8080
+```
 
-# Run custom port and directory
-java -jar javloadserver-1.1.0.jar -p 8080 -d /path/to/files
+#### Upload File Size Limits
+```bash
+# Current version supports up to 1000MB (1GB) file uploads
+# This limit is pre-configured for optimal performance
+# Default configuration in application.properties:
+# server.servlet.multipart.max-file-size=1000MB
+# server.servlet.multipart.max-request-size=1000MB
+
+# For custom limits, create application.properties:
+echo "server.servlet.multipart.max-file-size=2GB" > application.properties
+echo "server.servlet.multipart.max-request-size=2GB" >> application.properties
+java -jar javloadserver-1.1.0.jar
 ```
 
 ### Option 2: Build from Source
@@ -286,7 +300,7 @@ java -jar target/javloadserver-1.1.0.jar --debug
 | `JAVLOADSERVER_DIRECTORY` | Serve directory | `.` |
 | `JAVLOADSERVER_BIND` | Bind address | `0.0.0.0` |
 | `JAVLOADSERVER_PASSWORD` | Server password | None |
-| `JAVLOADSERVER_MAX_FILE_SIZE` | Max upload size | `100MB` |
+| `JAVLOADSERVER_MAX_FILE_SIZE` | Max upload size | `1000MB` |
 
 ### Production Configuration
 
@@ -362,10 +376,10 @@ logging.file.name=logs/javloadserver.log
 
 ### Benchmarks
 - **Memory Usage**: < 50MB for typical workloads
-- **File Upload**: 100MB+ files handled efficiently  
+- **File Upload**: Up to 1000MB (1GB) files supported  
 - **Concurrent Users**: 100+ simultaneous connections
 - **Response Time**: < 100ms for file listing
-- **Throughput**: 1GB+ file transfers supported
+- **Throughput**: Optimized for large file transfers
 
 ### Optimizations
 - **Streaming** for large file transfers
@@ -421,7 +435,7 @@ java -jar javloadserver.jar -p 8080
 ```
 
 #### File Upload Fails
-- Check file size limits (default 100MB)
+- Check file size limits (default 1000MB/1GB)
 - Verify directory permissions
 - Check disk space availability
 
@@ -446,7 +460,7 @@ java -jar javloadserver.jar -p 8080
 - ✅ **Mobile Optimization** - Touch gestures, responsive design  
 - ✅ **15+ Professional Themes** - Modern UI carousel
 - ✅ **Health Monitoring** - Production ready actuator endpoints
-- ✅ **Advanced File Handling** - Size limits, type validation
+- ✅ **Advanced File Handling** - 1GB size limit, type validation
 - ✅ **Comprehensive Test Suite** - 95%+ code coverage
 
 #### 🔧 Improvements
