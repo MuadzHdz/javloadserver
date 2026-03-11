@@ -53,6 +53,26 @@ JavloadServer menggabungkan kemudahan penggunaan dengan fitur kelas atas. Diranc
 
 ---
 
+## 🛠️ Teknologi & Bahasa Pemrograman
+
+Project ini menggunakan teknologi modern untuk memastikan performa yang cepat dan tampilan yang premium di berbagai platform.
+
+### **📱 Aplikasi Android**
+- **Bahasa Utama**: [Kotlin](https://kotlinlang.org/) (Bahasa modern yang direkomendasikan Google untuk Android).
+- **UI Framework**: **Jetpack Compose** (Untuk membangun UI yang deklaratif, reaktif, dan animasi yang mulus).
+- **Network Stack**: **NanoHTTPD** (Server HTTP ringan yang efisien dijalankan sebagai service).
+- **Architecture**: **MVVM (Model-View-ViewModel)** (Memastikan kode terstruktur dan mudah dikelola).
+- **QR Engine**: **ZXing** (Untuk pembuatan QR Code akses instan).
+
+### **🖥️ Aplikasi Terminal (CLI)**
+- **Bahasa Utama**: **Java 17+** (Bahasa enterprise yang kuat dan stabil).
+- **Framework**: **Spring Boot 3.2.0** (Framework Java terbaik untuk membangun aplikasi server).
+- **View Engine**: **Thymeleaf** (Untuk rendering Portal Web di sisi server).
+- **Build Tool**: **Maven** (Untuk manajemen dependensi dan otomasi build).
+- **Security**: **Spring Security** (Proteksi tingkat tinggi untuk autentikasi dan otorisasi).
+
+---
+
 ## 📱 Instalasi Aplikasi Android
 
 Aplikasi Android memungkinkan kamu menjadikan HP kamu sebagai server file yang bisa diakses oleh perangkat lain di jaringan yang sama.
