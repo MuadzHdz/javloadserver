@@ -1,251 +1,200 @@
 package com.javloadserver.server
 
-import android.content.Context
-import android.os.Environment
 import fi.iki.elonen.NanoHTTPD
 import fi.iki.elonen.NanoHTTPD.Response.Status
-import com.google.gson.Gson
 import java.io.File
 import java.io.FileInputStream
-import java.io.IOException
-import java.net.InetAddress
-import java.net.NetworkInterface
-import java.util.Collections
+import java.io.UnsupportedEncodingException
+import java.net.URLDecoder
+import java.util.HashMap
 
 class AndroidHttpServer(
     private val port: Int,
     private val directory: String,
     private val password: String? = null
 ) : NanoHTTPD(port) {
-    
-    private val gson = Gson()
-    
+
+    private val authCookieName = "auth_token"
+    private val serverToken = "javload_secret_token" // Robust enough for local use
+
     override fun serve(session: IHTTPSession): Response {
-        return when (session.method) {
-            Method.GET -> handleGet(session)
-            Method.POST -> handlePost(session)
-            else -> newFixedLengthResponse(Status.METHOD_NOT_ALLOWED, "text/plain", "Method not allowed")
-        }
-    }
-    
-    private fun handleGet(session: IHTTPSession): Response {
         val uri = session.uri
-        
+        val method = session.method
+
+        // Static resources
+        if (uri == "/css/style.css") {
+            return newFixedLengthResponse(Status.OK, "text/css", WebPortal.STYLE_CSS)
+        }
+        if (uri == "/js/script.js") {
+            return newFixedLengthResponse(Status.OK, "text/javascript", WebPortal.SCRIPT_JS)
+        }
+
+        // Authentication routes
+        if (uri == "/login") {
+            if (method == Method.POST) {
+                return handleLoginPost(session)
+            }
+            return handleLoginGet(session)
+        }
+
+        if (uri == "/logout") {
+            val response = newFixedLengthResponse(Status.REDIRECT, "text/plain", "")
+            response.addHeader("Location", "/login?logout")
+            response.addCookie(authCookieName, "", -1)
+            return response
+        }
+
+        // Protected routes
+        if (password != null && !isAuthenticated(session)) {
+            val response = newFixedLengthResponse(Status.REDIRECT, "text/plain", "")
+            response.addHeader("Location", "/login")
+            return response
+        }
+
         return when {
-            uri == "/" -> handleFileList(session)
-            uri.startsWith("/download/") -> handleFileDownload(session)
-            uri.startsWith("/qrcode/") -> handleQRCode(session)
-            else -> newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "Not found")
+            uri == "/" || uri == "/browse" -> handleBrowse(session)
+            uri == "/download" -> handleDownload(session)
+            uri == "/upload" -> handleUpload(session)
+            else -> newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "404 Not Found")
         }
     }
-    
-    private fun handlePost(session: IHTTPSession): Response {
-        val uri = session.uri
-        
-        return when {
-            uri == "/upload" -> handleFileUpload(session)
-            uri == "/auth" -> handleAuthentication(session)
-            else -> newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "Not found")
-        }
+
+    private fun handleLoginGet(session: IHTTPSession): Response {
+        val params = session.parameters
+        val theme = session.cookies[ "theme"] ?: "tokyo-night"
+        val error = params.containsKey("error")
+        val logout = params.containsKey("logout")
+        return newFixedLengthResponse(Status.OK, "text/html", WebPortal.getLoginHtml(theme, error, logout))
     }
-    
-    private fun handleFileList(session: IHTTPSession): Response {
-        if (password != null && !isAuthenticated(session)) {
-            return createLoginResponse()
-        }
-        
+
+    private fun handleLoginPost(session: IHTTPSession): Response {
+        val files = HashMap<String, String>()
         try {
-            val dir = File(directory)
-            if (!dir.exists()) {
-                dir.mkdirs()
-            }
-            
-            val files = dir.listFiles()?.map { file ->
-                mapOf(
-                    "name" to file.name,
-                    "path" to file.absolutePath,
-                    "size" to file.length(),
-                    "isDirectory" to file.isDirectory,
-                    "lastModified" to file.lastModified()
-                )
-            } ?: emptyList()
-            
-            val jsonResponse = gson.toJson(mapOf("files" to files))
-            return newFixedLengthResponse(Status.OK, "application/json", jsonResponse)
-            
-        } catch (e: Exception) {
-            return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "Error: ${e.message}")
-        }
-    }
-    
-    private fun handleFileDownload(session: IHTTPSession): Response {
-        if (password != null && !isAuthenticated(session)) {
-            return createLoginResponse()
-        }
-        
-        try {
-            val fileName = session.uri.substring("/download/".length)
-            val file = File(directory, fileName)
-            
-            if (!file.exists() || file.isDirectory) {
-                return newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "File not found")
-            }
-            
-            val mimeType = getMimeType(file.name)
-            val inputStream = FileInputStream(file)
-            
-            return newFixedLengthResponse(
-                Status.OK, 
-                mimeType, 
-                inputStream, 
-                file.length()
-            )
-            
-        } catch (e: Exception) {
-            return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "Error: ${e.message}")
-        }
-    }
-    
-    private fun handleFileUpload(session: IHTTPSession): Response {
-        if (password != null && !isAuthenticated(session)) {
-            return createLoginResponse()
-        }
-        
-        try {
-            val files = mutableMapOf<String, String>()
             session.parseBody(files)
-            
-            val uploadedFile = session.files["file"]
-            if (uploadedFile != null) {
-                val fileName = uploadedFile.name ?: "uploaded_file"
-                val destinationFile = File(directory, fileName)
-                
-                uploadedFile.inputStream.use { input ->
-                    destinationFile.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                }
-                
-                val response = mapOf(
-                    "success" to true,
-                    "message" to "File uploaded successfully",
-                    "filename" to fileName
-                )
-                
-                return newFixedLengthResponse(Status.OK, "application/json", gson.toJson(response))
-            }
-            
-            return newFixedLengthResponse(Status.BAD_REQUEST, "text/plain", "No file uploaded")
-            
         } catch (e: Exception) {
-            return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "Error: ${e.message}")
+            return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "Internal Error")
         }
-    }
-    
-    private fun handleAuthentication(session: IHTTPSession): Response {
-        try {
-            val files = mutableMapOf<String, String>()
-            session.parseBody(files)
-            
-            val postData = files["postData"] ?: ""
-            val params = parsePostData(postData)
-            
-            if (params["password"] == password) {
-                val response = mapOf("success" to true, "token" to generateSessionToken())
-                return newFixedLengthResponse(Status.OK, "application/json", gson.toJson(response))
-            }
-            
-            return newFixedLengthResponse(Status.UNAUTHORIZED, "application/json", 
-                gson.toJson(mapOf("success" to false, "message" to "Invalid password")))
-            
-        } catch (e: Exception) {
-            return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "Error: ${e.message}")
+
+        val submittedPassword = files["password"]
+        if (submittedPassword == password) {
+            val response = newFixedLengthResponse(Status.REDIRECT, "text/plain", "")
+            response.addHeader("Location", "/")
+            response.addCookie(authCookieName, serverToken, 30) // 30 days
+            return response
         }
+
+        val response = newFixedLengthResponse(Status.REDIRECT, "text/plain", "")
+        response.addHeader("Location", "/login?error")
+        return response
     }
-    
-    private fun handleQRCode(session: IHTTPSession): Response {
-        try {
-            val serverUrl = getServerUrl()
-            val qrData = mapOf("url" to serverUrl, "port" to port)
-            
-            return newFixedLengthResponse(Status.OK, "application/json", gson.toJson(qrData))
-            
-        } catch (e: Exception) {
-            return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "Error: ${e.message}")
-        }
-    }
-    
+
     private fun isAuthenticated(session: IHTTPSession): Boolean {
-        val cookies = session.cookies
-        return cookies["auth_token"] == generateSessionToken()
+        return session.cookies[authCookieName] == serverToken
     }
-    
-    private fun createLoginResponse(): Response {
-        val loginHtml = """
-            <!DOCTYPE html>
-            <html>
-            <head><title>Login Required</title></head>
-            <body>
-                <h1>Login Required</h1>
-                <form method="post" action="/auth">
-                    <input type="password" name="password" placeholder="Enter password" required>
-                    <button type="submit">Login</button>
-                </form>
-            </body>
-            </html>
-        """.trimIndent()
+
+    private fun handleBrowse(session: IHTTPSession): Response {
+        val params = session.parameters
+        val currentPath = params["path"]?.get(0) ?: ""
+        val theme = session.cookies["theme"] ?: "tokyo-night"
         
-        return newFixedLengthResponse(Status.UNAUTHORIZED, "text/html", loginHtml)
+        val dir = File(directory, currentPath)
+        if (!dir.exists() || !dir.isDirectory) {
+            return newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "Directory not found")
+        }
+
+        val items = dir.listFiles()?.sortedWith(compareBy<File> { !it.isDirectory }.thenBy { it.name }) ?: emptyArray()
+        
+        val fileListHtml = StringBuilder()
+        
+        // Parent directory link
+        if (currentPath.isNotEmpty()) {
+            val parentPath = if (currentPath.contains("/")) currentPath.substringBeforeLast("/") else ""
+            fileListHtml.append("""
+                <li class="parent-dir">
+                    <a href="/browse?path=${parentPath}">
+                        <span class="material-icons">folder_open</span>&nbsp;&nbsp;&nbsp;<span>..</span>
+                    </a>
+                </li>
+            """)
+        }
+
+        for (item in items) {
+            val relativePath = if (currentPath.isEmpty()) item.name else "$currentPath/${item.name}"
+            val icon = if (item.isDirectory) "folder" else "description"
+            val link = if (item.isDirectory) "/browse?path=$relativePath" else "/download?filename=$relativePath"
+            
+            fileListHtml.append("""
+                <li>
+                    <a href="${link}">
+                        <span class="material-icons">${icon}</span>&nbsp;&nbsp;&nbsp;<span>${item.name}</span>
+                    </a>
+                </li>
+            """)
+        }
+
+        val html = WebPortal.getIndexHtml(
+            theme = theme,
+            currentPath = currentPath,
+            fileListItems = fileListHtml.toString(),
+            isEmpty = items.isEmpty() && currentPath.isEmpty(),
+            flashMessages = "" // Simplified flash messages
+        )
+
+        return newFixedLengthResponse(Status.OK, "text/html", html)
     }
-    
+
+    private fun handleDownload(session: IHTTPSession): Response {
+        val filename = session.parameters["filename"]?.get(0) ?: return newFixedLengthResponse(Status.BAD_REQUEST, "text/plain", "Missing filename")
+        val file = File(directory, filename)
+        
+        if (!file.exists() || file.isDirectory) {
+            return newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "File not found")
+        }
+
+        val mimeType = getMimeType(file.name)
+        return newFixedLengthResponse(Status.OK, mimeType, FileInputStream(file), file.length())
+    }
+
+    private fun handleUpload(session: IHTTPSession): Response {
+        val files = HashMap<String, String>()
+        try {
+            session.parseBody(files)
+            val path = session.parameters["path"]?.get(0) ?: ""
+            val uploadDir = File(directory, path)
+            
+            // Handle multiple files
+            // NanoHTTPD puts temporary file paths in the 'files' map
+            // and original filenames in the 'parameters' map
+            val fileNames = session.parameters["file"] ?: return newFixedLengthResponse(Status.BAD_REQUEST, "text/plain", "No files selected")
+            
+            for (i in fileNames.indices) {
+                val fileName = fileNames[i]
+                // For multiple files, NanoHTTPD might use 'file', 'file1', 'file2', etc. in the 'files' map
+                val key = if (i == 0) "file" else "file$i"
+                val tempFilePath = files[key] ?: continue
+                
+                val destFile = File(uploadDir, fileName)
+                File(tempFilePath).renameTo(destFile)
+            }
+            
+            val response = newFixedLengthResponse(Status.REDIRECT, "text/plain", "")
+            response.addHeader("Location", "/browse?path=$path")
+            return response
+            
+        } catch (e: Exception) {
+            return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "Upload error: ${e.message}")
+        }
+    }
+
     private fun getMimeType(fileName: String): String {
         return when {
             fileName.endsWith(".html") -> "text/html"
             fileName.endsWith(".css") -> "text/css"
             fileName.endsWith(".js") -> "application/javascript"
-            fileName.endsWith(".json") -> "application/json"
             fileName.endsWith(".png") -> "image/png"
             fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") -> "image/jpeg"
-            fileName.endsWith(".gif") -> "image/gif"
-            fileName.endsWith(".pdf") -> "application/pdf"
             fileName.endsWith(".mp4") -> "video/mp4"
-            fileName.endsWith(".mp3") -> "audio/mpeg"
             else -> "application/octet-stream"
         }
-    }
-    
-    private fun getServerUrl(): String {
-        try {
-            val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-            for (intf in interfaces) {
-                val addresses = Collections.list(intf.inetAddresses)
-                for (addr in addresses) {
-                    if (!addr.isLoopbackAddress) {
-                        val hostAddress = addr.hostAddress
-                        if (hostAddress != null && hostAddress.indexOf(':') < 0) {
-                            return "http://$hostAddress:$port"
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            // Fallback to localhost
-        }
-        return "http://localhost:$port"
-    }
-    
-    private fun generateSessionToken(): String {
-        return "server_token_${System.currentTimeMillis()}"
-    }
-    
-    private fun parsePostData(data: String): Map<String, String> {
-        val params = mutableMapOf<String, String>()
-        data.split("&").forEach { param ->
-            val keyValue = param.split("=", limit = 2)
-            if (keyValue.size == 2) {
-                params[keyValue[0]] = keyValue[1]
-            }
-        }
-        return params
     }
 }

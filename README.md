@@ -7,492 +7,148 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Java versions](https://img.shields.io/badge/Java-17+-orange.svg?style=for-the-badge&logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg?style=for-the-badge&logo=spring-boot)](https://spring.io/projects/spring-boot)
-[![Build Status](https://img.shields.io/badge/Build-Passing-green.svg?style=for-the-badge&logo=github-actions)](https://github.com/MuadzHdz/javloadserver/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-95%25-brightgreen.svg?style=for-the-badge)](https://codecov.io/gh/MuadzHdz/javloadserver)
+[![Android](https://img.shields.io/badge/Android-Ready-green.svg?style=for-the-badge&logo=android)](https://developer.android.com/)
 
-**🚀 Modern Enterprise File Sharing Server**
+**🚀 Server Berbagi File Modern & Premium**
 
-A production-ready file sharing server built with Spring Boot, featuring enterprise-grade security, beautiful UI, and seamless mobile experience.
+JavloadServer adalah solusi berbagi file profesional yang hadir dalam dua versi: **Aplikasi Terminal (CLI)** berbasis Spring Boot dan **Aplikasi Android Native**. Keduanya menawarkan keamanan tingkat tinggi, UI yang memukau, dan pengalaman pengguna yang mulus.
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [API](#-api) • [Development](#-development) • [Contributing](#-contributing)
+[Fitur](#-fitur) • [Instalasi Android](#-instalasi-aplikasi-android) • [Instalasi Terminal](#-instalasi-aplikasi-terminal) • [Penggunaan](#-cara-penggunaan) • [Tema](#-tema--kustomisasi)
 
 </div>
 
 ---
 
-## 🎯 About
+## 🎯 Tentang Project
 
-JavloadServer is a sophisticated file sharing solution that combines the simplicity of Python's `http.server` with enterprise-grade features. Built with Java 17 and Spring Boot, it offers exceptional performance, security, and scalability for both personal and professional use.
+JavloadServer menggabungkan kemudahan penggunaan dengan fitur kelas atas. Dirancang untuk performa maksimal, keamanan ketat, dan fleksibilitas untuk penggunaan pribadi maupun profesional.
 
-**Perfect for:**
-- 🏢 **Enterprise environments** needing secure file sharing
-- 🛠️ **Developers** sharing build artifacts and resources  
-- 👥 **Teams** collaborating on documents
-- 📱 **Mobile users** accessing files on the go
-- 🔐 **Secure transfers** requiring authentication
-
----
-
-## ✨ Features
-
-### 🎨 **User Experience**
-- **Modern Dark UI** with 15+ professional themes
-- **Responsive Design** - Mobile-first approach
-- **Drag & Drop Upload** with progress indication
-- **Theme Carousel** - Beautiful animated theme switcher
-- **Touch Gestures** - Long press for file preview
-- **QR Code Access** - Instant mobile connectivity
-
-### 🔒 **Security & Authentication**
-- **Password Protection** with secure input masking
-- **CSRF Protection** built-in
-- **Path Traversal Prevention** 
-- **File Type Validation** and sanitization
-- **Hidden File Filtering** for clean interface
-- **Session Management** with timeout control
-
-### 🚀 **Performance & Reliability**
-- **Enterprise Grade** Spring Boot backend
-- **Optimized File Handling** with Java NIO
-- **Memory Efficient** streaming for large files
-- **Compression Support** for bandwidth optimization
-- **Health Monitoring** with actuator endpoints
-- **Production Ready** logging and metrics
-
-### 📁 **File Management**
-- **Multiple File Upload** support
-- **Directory Navigation** with breadcrumbs
-- **File Preview** functionality
-- **Smart Duplicate Handling**
-- **Cross-Platform Compatibility**
-- **International Filename Support**
-- **1GB Upload Limit** - Maximum file size: 1000MB
+**Cocok digunakan untuk:**
+- 🏢 **Lingkungan Kantor** yang butuh berbagi file dengan aman.
+- 🛠️ **Developer** yang ingin berbagi aset build atau resource antar sistem.
+- 📱 **Pengguna Mobile** yang ingin mengakses file HP dari laptop atau sebaliknya.
+- 🔐 **Transfer Aman** yang membutuhkan proteksi password.
 
 ---
 
-## 🚀 Quick Start
+## ✨ Fitur Utama
 
-### Prerequisites
-- **Java 17+** (OpenJDK, Oracle Java, or compatible)
-- **Maven 3.6+** (for building from source)
-- **Git** (for cloning the repository)
+### 📱 **Eksklusif Android**
+- **Foreground Service**: Server tetap jalan meskipun aplikasi di-minimize.
+- **Native UI**: Dibuat dengan Jetpack Compose untuk performa mulus.
+- **QR Code Sharing**: Bagikan link akses server secara instan lewat scan QR.
+- **Status Dashboard**: Pantau IP Address dan status server secara real-time.
 
-### Option 1: Download & Run (Recommended for Users)
+### 🖥️ **Eksklusif Terminal**
+- **Enterprise Ready**: Dibangun dengan Spring Boot 3.2.0.
+- **CLI Power**: Kontrol penuh melalui argumen command line.
+- **Monitoring**: Mendukung Actuator endpoints untuk memantau kesehatan server.
 
-#### Download Latest Release
+### 🎨 **Pengalaman Pengguna (Terminal & Android)**
+- **Modern Dark UI**: Tampilan Portal Web yang elegan dengan efek glassmorphism.
+- **15+ Tema Premium**: Ganti tema sesukamu (Tokyo Night, Rose Pine, Catppuccin, dll).
+- **Drag & Drop Upload**: Upload file dengan animasi progress bar yang keren.
+- **Navigasi Folder**: Telusuri folder dengan mudah melalui browser.
+- **Proteksi Password**: Keamanan ekstra untuk mengakses file kamu.
+
+---
+
+## 📱 Instalasi Aplikasi Android
+
+Aplikasi Android memungkinkan kamu menjadikan HP kamu sebagai server file yang bisa diakses oleh perangkat lain di jaringan yang sama.
+
+### Langkah-langkah Instalasi:
+
+1.  **Clone Project**:
+    ```bash
+    git clone https://github.com/MuadzHdz/javloadserver.git
+    cd javloadserver/android-app
+    ```
+2.  **Build Aplikasi**:
+    - Buka folder `android-app` menggunakan **Android Studio**.
+    - Atau gunakan baris perintah (Terminal):
+      ```bash
+      ./gradlew assembleDebug
+      ```
+3.  **Install APK**:
+    - File APK akan tersedia di `android-app/app/build/outputs/apk/debug/app-debug.apk`.
+    - Pindahkan APK ke HP dan install seperti biasa.
+4.  **Izin Penyimpanan**:
+    - Saat pertama kali dijalankan, aplikasi akan meminta izin akses file. Pastikan kamu memberikan izin agar aplikasi bisa membaca dan menulis file.
+
+### Cara Penggunaan:
+1.  Buka aplikasi **JavLoadServer**.
+2.  Klik ikon **Settings** untuk mengatur:
+    - **Port**: Default 8080.
+    - **Directory**: Pilih folder yang ingin kamu bagikan.
+    - **Password**: (Opsional) Aktifkan untuk keamanan ekstra.
+3.  Klik **START SERVER SESSION**.
+4.  Gunakan IP Address yang muncul (atau scan QR Code) untuk mengakses dari browser di laptop/perangkat lain.
+
+---
+
+## 🖥️ Instalasi Aplikasi Terminal
+
+Versi ini cocok dijalankan di PC/Laptop (Windows, Linux, macOS).
+
+### Prasyarat:
+- **Java 17+** (OpenJDK atau Oracle Java)
+- **Maven 3.6+** (Opsional, untuk build dari source)
+
+### Cara Menjalankan:
+
+#### Opsi 1: Build & Run (Rekomendasi)
 ```bash
-# Download the latest release JAR
-wget https://github.com/MuadzHdz/javloadserver/releases/download/v1.1.0/javloadserver-1.1.0.jar
-
-# Run with default settings
-java -jar javloadserver-1.1.0.jar
-
-# Run with custom settings
-java -jar javloadserver-1.1.0.jar --password mysecretpass --port 8080
-```
-
-#### Upload File Size Limits
-```bash
-# Current version supports up to 1000MB (1GB) file uploads
-# This limit is pre-configured for optimal performance
-# Default configuration in application.properties:
-# server.servlet.multipart.max-file-size=1000MB
-# server.servlet.multipart.max-request-size=1000MB
-
-# For custom limits, create application.properties:
-echo "server.servlet.multipart.max-file-size=2GB" > application.properties
-echo "server.servlet.multipart.max-request-size=2GB" >> application.properties
-java -jar javloadserver-1.1.0.jar
-```
-
-### Option 2: Build from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/MuadzHdz/javloadserver.git
-cd javloadserver
-
-# Build the project
+# Masuk ke folder root project
 mvn clean package -DskipTests
 
-# Run the application
+# Jalankan server
 java -jar target/javloadserver-1.1.0.jar
 ```
 
----
-
-## 📋 Command Line Options
-
-| Option | Short | Description | Default |
-|--------|--------|-------------|---------|
-| `--directory <path>` | `-d` | Directory to serve from | Current Directory |
-| `--port <number>` | `-p` | Port to listen on | `8000` |
-| `--bind <address>` | `-b` | Network address to bind to | `0.0.0.0` |
-| `--password [PWD]` | | Password protection | None |
-| `--open` | `-o` | Auto-open browser | `false` |
-| `--version` | | Show version | - |
-| `--help` | `-h` | Show help | - |
-
-### Usage Examples
-
+#### Opsi 2: Kustomisasi Pengaturan
 ```bash
-# Basic file sharing
-java -jar javloadserver.jar
-
-# Password protected server
-java -jar javloadserver.jar --password mysecretpass
-
-# Custom directory and port
-java -jar javloadserver.jar -d /home/user/shared -p 8080
-
-# Auto-open in browser
-java -jar javloadserver.jar -o
-
-# Bind to localhost only
-java -jar javloadserver.jar -b 127.0.0.1
+# Jalankan dengan password dan port kustom
+java -jar javloadserver.jar --password rahasia --port 9000 -d /folder/tujuan
 ```
+
+### Opsi Command Line:
+| Opsi | Deskripsi | Default |
+|--------|-------------|---------|
+| `--directory` / `-d` | Folder yang akan dibagikan | Direktori saat ini |
+| `--port` / `-p` | Port server | `8000` |
+| `--password` | Pasang password akses | Tanpa password |
+| `--open` / `-o` | Otomatis buka browser | `false` |
 
 ---
 
-## 🎨 Themes
+## 🎨 Tema & Kustomisasi
 
-JavloadServer includes **15+ professional themes**:
+JavloadServer dilengkapi dengan **15+ tema profesional**. Kamu bisa menggantinya secara instan melalui *Theme Carousel* di bagian bawah halaman web:
 
-### Dark Themes
-- 🌃 **Tokyo Night** - Professional dark blue
-- 🌹 **Rose Pine** - Elegant purple tones  
-- 🐱 **Catppuccin Mocha** - Modern dark aesthetic
-- 🍎 **Catppuccin Macchiato** - Warm dark theme
-- ☕ **Catppuccin Frappe** - Coffee-inspired dark
-- ❄️ **Nord** - Nordic minimalist
-- 🟫 **Gruvbox Dark** - Retro terminal feel
-- 🧛 **Dracula** - Classic dark theme
-- 🔧 **Monokai Pro** - Developer favorite
-- 🌑 **Solarized Dark** - Eye-friendly contrast
-- 🎯 **One Dark Pro** - VSCode inspired
-- 🌊 **Ayu Dark** - Modern dark blue
-
-### Light Themes  
-- ☕ **Catppuccin Latte** - Clean light theme
-- 🟨 **Gruvbox Light** - Warm retro light
-- ☀️ **Solarized Light** - Bright and clear
-
-Switch themes instantly using the carousel at the bottom of the interface!
+- 🌃 **Tokyo Night** - Biru gelap profesional
+- 🌹 **Rose Pine** - Gradasi ungu elegan
+- 🐱 **Catppuccin series** - Mocha, Macchiato, Frappe, Latte
+- 🧛 **Dracula** - Tema gelap klasik
+- ❄️ **Nord** - Minimalis ala Nordik
+- ...dan masih banyak lagi!
 
 ---
 
-## 📡 API Reference
+## 🤝 Kontribusi
 
-### REST Endpoints
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/browse` | List files and directories | ✅ if password set |
-| `GET` | `/download` | Download file | ✅ if password set |
-| `GET` | `/preview` | Preview file inline | ✅ if password set |
-| `POST` | `/upload` | Upload file | ✅ if password set |
-| `GET` | `/health` | Health check | ❌ |
-| `GET` | `/api/info` | Application info | ❌ |
-
-### Response Examples
-
-#### Health Check
-```json
-{
-  "status": "UP",
-  "application": "JavloadServer", 
-  "version": "1.1.0",
-  "timestamp": 1641024000000
-}
-```
-
-#### Application Info
-```json
-{
-  "application": "JavloadServer",
-  "version": "1.1.0", 
-  "description": "A modern file sharing server with upload capabilities",
-  "endpoints": {
-    "browse": "/browse",
-    "download": "/download",
-    "upload": "/upload", 
-    "preview": "/preview",
-    "health": "/health"
-  }
-}
-```
+Kami sangat terbuka untuk kontribusi!
+1. Fork repository ini.
+2. Buat branch baru: `git checkout -b fitur-keren`.
+3. Commit perubahan kamu: `git commit -m 'Tambah fitur keren'`.
+4. Push ke branch: `git push origin fitur-keren`.
+5. Buat Pull Request.
 
 ---
 
-## 🧪 Development
+## 📄 Lisensi
 
-### Project Structure
-```
-src/main/java/com/javloadserver/
-├── UploadServerApplication.java     # Main application class
-├── ServerConfig.java                # CLI argument handling
-├── QRCodeGenerator.java             # QR code generation
-├── config/
-│   ├── SecurityConfig.java          # Spring Security config
-│   ├── WebConfig.java              # CORS and web config
-│   ├── ApplicationConfig.java      # App-wide configuration
-│   ├── CustomHealthIndicator.java   # Custom health checks
-│   └── ActuatorSecurityConfig.java # Actuator security
-├── controller/
-│   ├── FileController.java         # Main file operations
-│   └── HealthController.java       # Health endpoints
-├── service/
-│   ├── FileService.java            # File operations
-│   └── SystemInfoService.java     # System monitoring
-└── exception/
-    └── GlobalExceptionHandler.java # Error handling
-
-src/main/resources/
-├── templates/
-│   ├── index.html                 # Main file browser
-│   └── login.html                # Login page
-├── static/
-│   ├── css/style.css             # Styles with 15+ themes
-│   └── js/script.js             # Frontend interactions
-└── application.properties         # Configuration
-
-src/test/                         # Comprehensive test suite
-├── controller/
-├── service/
-└── ServerConfigTest.java
-```
-
-### Running Tests
-
-```bash
-# Run all tests
-mvn test
-
-# Run with coverage
-mvn test jacoco:report
-
-# Run specific test
-mvn test -Dtest=FileServiceTest
-```
-
-### Development Commands
-
-```bash
-# Development mode with hot reload
-mvn spring-boot:run
-
-# Build for production
-mvn clean package -Pproduction
-
-# Run with debug enabled
-java -jar target/javloadserver-1.1.0.jar --debug
-```
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `JAVLOADSERVER_PORT` | Server port | `8000` |
-| `JAVLOADSERVER_DIRECTORY` | Serve directory | `.` |
-| `JAVLOADSERVER_BIND` | Bind address | `0.0.0.0` |
-| `JAVLOADSERVER_PASSWORD` | Server password | None |
-| `JAVLOADSERVER_MAX_FILE_SIZE` | Max upload size | `1000MB` |
-
-### Production Configuration
-
-Create `application-production.properties`:
-
-```properties
-# Performance
-server.tomcat.max-threads=200
-server.tomcat.min-spare-threads=10
-server.compression.enabled=true
-server.compression.mime-types=application/json,text/html,text/xml
-
-# Security
-server.ssl.enabled=false
-security.require-ssl=false
-
-# Logging
-logging.level.com.javloadserver=WARN
-logging.file.name=logs/javloadserver.log
-```
-
----
-
-## 🏗️ Technology Stack
-
-### Backend
-- **Framework**: Spring Boot 3.2.0
-- **Security**: Spring Security 6.2.0  
-- **Templates**: Thymeleaf
-- **File I/O**: Java NIO
-- **QR Generation**: ZXing 3.5.1
-- **Build Tool**: Maven 3.9+
-
-### Frontend
-- **Languages**: HTML5, CSS3, JavaScript (ES6+)
-- **UI Framework**: Custom with Material Icons
-- **Responsive**: Mobile-first design
-- **Theming**: CSS Variables + 15 themes
-- **Icons**: Google Material Icons
-
-### Testing & Quality
-- **Testing**: JUnit 5, Mockito
-- **Coverage**: JaCoCo
-- **Code Quality**: Built-in validations
-- **Security**: OWASP recommendations
-
----
-
-## 🔒 Security Features
-
-### Authentication & Authorization
-- ✅ **BCrypt Password Hashing**
-- ✅ **Session Management** with timeouts
-- ✅ **CSRF Protection** for all forms
-- ✅ **SameSite Cookies** for modern browsers
-
-### File Security  
-- ✅ **Path Traversal Prevention**
-- ✅ **Filename Sanitization**
-- ✅ **File Type Validation**
-- ✅ **Size Limit Enforcement**
-- ✅ **Hidden File Filtering**
-
-### Network Security
-- ✅ **CORS Configuration**
-- ✅ **Security Headers** (HSTS, XSS Protection)
-- ✅ **Input Validation** on all endpoints
-- ✅ **Rate Limiting** ready
-
----
-
-## 📈 Performance
-
-### Benchmarks
-- **Memory Usage**: < 50MB for typical workloads
-- **File Upload**: Up to 1000MB (1GB) files supported  
-- **Concurrent Users**: 100+ simultaneous connections
-- **Response Time**: < 100ms for file listing
-- **Throughput**: Optimized for large file transfers
-
-### Optimizations
-- **Streaming** for large file transfers
-- **Lazy Loading** of file listings
-- **Compressed Responses** when applicable
-- **Efficient Caching** strategies
-- **Minimal Memory Footprint**
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-### Development Workflow
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Make** your changes with tests
-4. **Run** the test suite: `mvn test`
-5. **Commit** your changes: `git commit -m 'Add amazing feature'`
-6. **Push** to branch: `git push origin feature/amazing-feature`
-7. **Open** a Pull Request
-
-### Code Standards
-
-- Follow **Java coding conventions**
-- Write **comprehensive tests** for new features
-- Update **documentation** as needed
-- Ensure **clean build**: `mvn clean compile`
-- Add **API documentation** for new endpoints
-
-### Areas to Contribute
-
-- 🎨 **New Themes** and UI improvements
-- 📱 **Mobile enhancements**  
-- 🔌 **Plugin system** development
-- 📊 **Analytics** and metrics
-- 🌐 **Internationalization** support
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### Port Already in Use
-```bash
-# Find process using port 8000
-lsof -i :8000
-# Kill process or use different port
-java -jar javloadserver.jar -p 8080
-```
-
-#### File Upload Fails
-- Check file size limits (default 1000MB/1GB)
-- Verify directory permissions
-- Check disk space availability
-
-#### Password Not Working
-- Ensure correct password when prompted
-- Clear browser cache/cookies
-- Check for trailing spaces in password
-
-### Support
-
-- 📖 [Documentation](https://github.com/MuadzHdz/javloadserver/wiki)
-- 🐛 [Issue Tracker](https://github.com/MuadzHdz/javloadserver/issues)
-- 💬 [Discussions](https://github.com/MuadzHdz/javloadserver/discussions)
-
----
-
-## 📜 Changelog
-
-### Version 1.1.0 (Current)
-#### 🆕 Major Features
-- ✅ **Enhanced Security** - CSRF protection, path validation
-- ✅ **Mobile Optimization** - Touch gestures, responsive design  
-- ✅ **15+ Professional Themes** - Modern UI carousel
-- ✅ **Health Monitoring** - Production ready actuator endpoints
-- ✅ **Advanced File Handling** - 1GB size limit, type validation
-- ✅ **Comprehensive Test Suite** - 95%+ code coverage
-
-#### 🔧 Improvements
-- ⚡ **Performance** optimizations for large files
-- 🛡️ **Security** enhancements and validations
-- 📱 **Mobile** experience improvements
-- 🎨 **UI/UX** polish and animations
-- 🔧 **Configuration** flexibility
-
-#### 🐛 Bug Fixes
-- Fixed filename sanitization for international characters
-- Resolved memory leak in file operations  
-- Corrected CORS configuration issues
-- Fixed theme persistence across sessions
-- Resolved password prompt security issue
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-```
-Copyright (c) 2025 Mu'adz
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-```
+Project ini dilisensikan di bawah **MIT License**. Lihat file [LICENSE](LICENSE) untuk detail lebih lanjut.
 
 ---
 
@@ -502,22 +158,12 @@ furnished to do so, subject to the following conditions:
 [![GitHub](https://img.shields.io/badge/GitHub-MuadzHdz-blue?style=flat&logo=github)](https://github.com/MuadzHdz)  
 [![Email](https://img.shields.io/badge/Email-adzhdz73@gmail.com-red?style=flat&logo=gmail)](mailto:adzhdz73@gmail.com)
 
-### Acknowledgments
-
-- 🚀 **Spring Team** - Amazing framework
-- 📱 **Google Material Design** - Icon library
-- 🎨 **Theme Community** - Color inspiration  
-- 🛡️ **OWASP** - Security guidelines
-- 🏗️ **Open Source Community** - Continuous inspiration
-
 ---
 
 <div align="center">
 
-**⭐ Star this project if it helped you!**
+**⭐ Beri bintang jika project ini bermanfaat buat kamu!**
 
-[![Star History Chart](https://api.star-history.com/svg?repos=MuadzHdz/javloadserver&type=Date)](https://star-history.com/#MuadzHdz/javloadserver&Date)
-
-Made with ❤️ and ☕
+Dibuat dengan ❤️ dan ☕ oleh Mu'adz.
 
 </div>
