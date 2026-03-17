@@ -63,7 +63,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "uploadserver=uploadserver.advanced_server:main",
+            "uploadserver=uploadserver.advanced_main:main",
         ],
     },
 )

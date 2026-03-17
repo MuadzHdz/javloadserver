@@ -233,7 +233,7 @@ def main():
     parser.add_argument(
         "--version",
         action="version",
-        version=f"uploadserverpro {__version__}",
+        version=f"uploadserver {__version__}",
         help="Show the version number and exit.",
     )
 
