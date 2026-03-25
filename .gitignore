@@ -1,35 +1,122 @@
+# \u0302 Established Except Control Analysis Configuration File
+# Updated with production-security best practices
+
+# ==============================================
+# Database Files
+# ==============================================
+*.db
+*.db.backup*
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+search_index/
+uploadserver/search_index/
+
+# ==============================================
 # Python
+ # ==============================================
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.~
+*.py[cod]
+*$.py.class
 *.so
-
-# Build artifacts
+.Python
 build/
-dist/
-*.egg-info/
 develop-eggs/
+dist/
+downloads/
 eggs/
+.eggs/
+lib/
+lib64/
+parts/
 sdist/
-wheelhouse/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Environment
+ist/
+WebstormProject/
+
+# Continuous Integration
+.txt
+.git/
+
+# ==============================================
+# Testing
+# ==============================================
+.tox/
+.nox/
+.coverage
+htmlcov/
+.coverage.*'
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# ==============================================
+# Environments
+# ==============================================
 .env
-.venv
-venv/
+.venv/env/
 ENV/
-env/
 env.bak/
-venv.bak/
+.venv.bak/
 
-# IDE / Editor
+# ==============================================
+# IDE
+# ==============================================
 .idea/
 .vscode/
 *.swp
 *.swo
-*.swn
+*~
 
-# Other
+# ==============================================
+# OS Generated
+# ==============================================
 .DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ==============================================
+# Logs
+# ==============================================
+logs/
+*.log
+
+# ==============================================
+# Temporary Files
+# ==============================================
+tmp/
+temp/
+*.tmp
+
+# ==============================================
+# Uploads (If stored locally)
+# ==============================================
+uploads/
+files/
+media/
+
+# ==============================================
+# Security
+# ==============================================
+.secrets.py
+config/production.py
+*.key
+*.pem
+.secret.*
