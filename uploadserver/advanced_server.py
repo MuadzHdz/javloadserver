@@ -264,6 +264,25 @@ def create_app():
         # Get user info - use guest if not authenticated
         user = current_user if current_user.is_authenticated else None
 
+        # Create a simple object for guest user
+        if not user:
+            from werkzeug.security import generate_password_hash
+
+            user = type(
+                "GuestUser",
+                (),
+                {
+                    "id": "guest",
+                    "username": "Guest",
+                    "email": "guest@localhost",
+                    "full_name": "Guest User",
+                    "role": "user",
+                    "storage_quota": 5 * 1024 * 1024 * 1024,  # 5GB default
+                    "storage_used": 0,
+                    "is_authenticated": False,
+                },
+            )()
+
         # Get user statistics if logged in
         if user:
             total_files = File.query.filter_by(owner_id=user.id).count()
@@ -299,6 +318,7 @@ def create_app():
         theme = request.cookies.get("theme", "tokyo-night")
         return render_template(
             "dashboard.html",
+            user=user,
             total_files=total_files,
             total_size=total_size,
             storage_percent=storage_percent,
