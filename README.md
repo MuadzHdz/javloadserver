@@ -1,112 +1,84 @@
-# 🚀 UploadServer 
+# UploadServer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python versions](https://img.shields.io/pypi/pyversions/uploadserver.svg)](https://pypi.org/project/uploadserver/)
-[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+A professional file sharing server built with Flask. Simple, modern, and efficient.
 
-> **A professional-grade file sharing server built for modern workflows.**  
-> Think of it as Python's `http.server` on steroids with enterprise-level features.
+## Overview
 
-![Demo](https://github.com/MuadzHdz/uploadserver/raw/main/docs/demo.gif)
+UploadServer is a Flask-based file sharing application that provides a clean web interface for uploading, browsing, and managing files. It offers two operation modes:
 
-### 🎯 Core Features
+- **Basic Mode**: Lightweight file server with password protection
+- **Advanced Mode**: Enterprise features including user management, file versioning, search, and WebSocket support
 
-#### 📁 **Advanced File Management**
-- **Smart Browsing** - Navigate directories with breadcrumb navigation
-- **File Operations** - Rename, delete, and create folders with ease
-- **Batch Operations** - Multi-select support for bulk actions
-- **Search & Filter** - Quick file discovery with intelligent search
+## Features
 
-#### 📤 **Enhanced Upload System**
-- **Drag & Drop** - Intuitive file upload with visual feedback
-- **Progress Tracking** - Real-time upload progress with detailed metrics
-- **Resume Support** - Paused uploads can be resumed (coming soon)
-- **Chunked Uploads** - Handle large files efficiently (coming soon)
+- File upload and download with drag-and-drop interface
+- Directory browsing with breadcrumb navigation
+- File preview for images and text files
+- Password protection for basic mode
+- User authentication and management (advanced mode)
+- Full-text search with Whoosh indexing
+- Real-time updates via WebSocket
+- Theme system with multiple color schemes
+- QR code generation for mobile access
+- RESTful API for programmatic access
+- Docker support for easy deployment
 
-#### 🔒 **Enterprise Security**
-- **Password Protection** - Secure your server with robust authentication
-- **Session Management** - Secure session handling with automatic timeout
-- **Path Validation** - Prevent directory traversal and security vulnerabilities
-- **CORS Support** - Configurable cross-origin resource sharing
+## Requirements
 
-#### 🎨 **Professional UI/UX**
-- **Theme System** - 15+ handcrafted themes including Catppuccin, Tokyo Night, Nord, and more
-- **Dark/Light Modes** - Automatic theme detection with manual override
-- **Responsive Design** - Mobile-first approach that works seamlessly on all devices
-- **Accessibility** - WCAG 2.1 compliant with keyboard navigation and screen reader support
+- Python 3.8+
+- Flask 2.3+
+- See `requirements.txt` for full dependencies
 
-#### 📱 **Mobile Optimization**
-- **QR Code Access** - Instant mobile connection with a single scan
-- **Touch Gestures** - Swipe, tap, and long-press support
-- **PWA Ready** - Install as a native app on mobile devices
-- **Offline Mode** - Basic functionality without internet (coming soon)
-
-#### 🔍 **File Preview System**
-- **Image Preview** - Native image viewer with zoom and pan
-- **Text Preview** - Syntax-highlighted code viewer for 20+ file types
-- **Document Preview** - PDF and document preview (coming soon)
-- **Media Player** - Audio and video streaming (coming soon)
-
----
-
-## 🚀 Quick Start
-
-### Installation
+## Installation
 
 ```bash
-# From source
 git clone https://github.com/MuadzHdz/uploadserver.git
 cd uploadserver
-python -m venv venv
-source venv/bin/activate
-pip install -e .
+pip install -r requirements.txt
 ```
 
-### Basic Usage
+## Quick Start
+
+### Basic Mode (Simple File Server)
 
 ```bash
-# Start server with default settings
-uploadserver
-
-# Serve a specific directory
-uploadserver -d /path/to/shared/folder
-
-# Use custom port and bind address
-uploadserver -p 8080 -b 0.0.0.0
-
-# Enable password protection
-uploadserver --password
-
-# Auto-open in browser
-uploadserver -o
+uploadserver -d /path/to/share -p 8000
 ```
 
----
+### Advanced Mode (Enterprise Features)
 
-## 📖 Advanced Configuration
+```bash
+uploadserver --dev-mode -d /path/to/share
+```
 
-### Command Line Options
+## Command Line Options
 
-| Option | Short | Description | Default |
-|--------|-------|-------------|---------|
-| `--directory <path>` | `-d` | Directory to serve and save uploads | Current Directory |
-| `--port <number>` | `-p` | Port to listen on | 8000 |
-| `--bind <address>` | `-b` | Network address to bind to | 0.0.0.0 |
-| `--password [value]` | | Enable password protection | None |
-| `--open` | `-o` | Auto-open browser | False |
-| `--version` | | Show version information | N/A |
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-d, --directory` | Directory to serve | Current directory |
+| `-p, --port` | Port to listen on | 8000 |
+| `-b, --bind` | Bind address | 0.0.0.0 |
+| `--password` | Enable password protection | None |
+| `-o, --open` | Auto-open browser | False |
+| `--dev-mode` | Enable development mode | False |
+
+## Docker Deployment
+
+```bash
+docker-compose up -d
+```
+
+The server will be available at `http://localhost:5000`.
+
+## Configuration
 
 ### Environment Variables
 
 ```bash
-# Configuration via environment variables
-export UPLOADSERVER_PORT=8080
-export UPLOADSERVER_BIND=127.0.0.1
-export UPLOADSERVER_PASSWORD=your-secure-password
-export UPLOADSERVER_DIRECTORY=/shared/files
-export UPLOADSERVER_THEME=tokyo-night
-export UPLOADSERVER_DEBUG=false
+export UPLOADSERVER_PORT=8000
+export UPLOADSERVER_BIND=0.0.0.0
+export UPLOADSERVER_PASSWORD=your-password
+export UPLOADSERVER_DIRECTORY=/path/to/files
 ```
 
 ### Configuration File
@@ -118,308 +90,65 @@ server:
   port: 8080
   bind: "0.0.0.0"
   directory: "/shared/files"
-  password: "your-secure-password"
-  
-ui:
-  theme: "tokyo-night"
-  auto_theme: true
-  show_hidden: false
-  
-security:
-  session_timeout: 3600
-  max_upload_size: "1GB"
-  allowed_extensions: [".jpg", ".png", ".pdf", ".txt"]
-  
-features:
-  enable_preview: true
-  enable_search: true
-  enable_mobile_app: true
+  password: "your-password"
 ```
 
----
+## API Endpoints
 
-## 🎨 Theme Gallery
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Redirect to browse |
+| GET | `/browse/<path>` | Browse directory |
+| GET | `/download/<path>` | Download file |
+| POST | `/upload/<path>` | Upload file |
+| POST | `/delete/<path>` | Delete file/directory |
+| POST | `/rename/<path>` | Rename file/directory |
+| POST | `/mkdir/<path>` | Create directory |
+| GET | `/preview/<path>` | Preview file |
+| GET | `/health` | Health check |
+| GET | `/login` | Login page (advanced) |
+| POST | `/login` | Authenticate (advanced) |
 
-### 🌙 Dark Themes
-- **Tokyo Night** - Elegant dark theme with blue accents
-- **Catppuccin Mocha** - Soothing dark palette from the Catppuccin suite
-- **Dracula** - Classic dark theme with purple highlights
-- **Nord** - Minimalist dark theme inspired by Nordic landscapes
-- **Gruvbox Dark** - Retro groove dark theme with warm colors
-
-### ☀️ Light Themes
-- **Catppuccin Latte** - Warm and inviting light theme
-- **Gruvbox Light** - Bright retro theme with excellent contrast
-- **Solarized Light** - Scientific color palette for reduced eye strain
-
-### 🎨 Professional Themes
-- **Monokai Pro** - Professional dark theme for developers
-- **One Dark Pro** - Dark theme from the popular VS Code extension
-- **Ayu Dark** - Modern dark theme with vibrant accents
-
----
-
-## 🛠️ Development Guide
-
-### Project Structure
+## Project Structure
 
 ```
 uploadserver/
 ├── uploadserver/
 │   ├── __init__.py          # Package initialization
-│   ├── server.py            # Main Flask application
-│   ├── static/              # Static assets
-│   │   ├── style.css        # Main stylesheet
-│   │   └── script.js        # Frontend JavaScript
-│   └── templates/           # Jinja2 templates
-│       ├── index.html       # Main file browser
-│       ├── login.html       # Authentication page
-│       └── preview.html     # File preview modal
+│   ├── server.py            # Basic Flask server
+│   ├── advanced_server.py   # Enterprise server
+│   ├── advanced_main.py     # CLI entry point
+│   ├── models.py            # Database models
+│   ├── api_routes.py        # REST API
+│   ├── search_engine.py    # Whoosh search
+│   ├── utils.py             # Utilities
+│   ├── templates/           # Jinja2 templates
+│   └── static/              # CSS/JS assets
 ├── tests/                   # Test suite
-├── docs/                    # Documentation
-├── setup.py                 # Package configuration
-└── README.md               # This file
+├── Dockerfile              # Container definition
+├── docker-compose.yml      # Docker orchestration
+├── requirements.txt       # Python dependencies
+└── setup.py                # Package configuration
 ```
 
-### Contributing
-
-We welcome contributions! Here's how to get started:
-
-#### 🍴 Fork & Clone
+## Testing
 
 ```bash
-git clone https://github.com/your-username/uploadserver.git
-cd uploadserver
-git checkout -b feature/your-feature-name
+pytest tests/
 ```
 
-#### 🧪 Development Setup
+## Security Features
 
-```bash
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+- Path validation to prevent directory traversal
+- Secure filename handling with Werkzeug
+- Session management with secure cookies
+- Password hashing for user authentication
+- CORS configuration support
 
-# Install in development mode
-pip install -e ".[dev]"
+## License
 
-# Run tests
-pytest
+MIT License - See LICENSE file for details
 
-# Run linter
-black .
-flake8 .
-```
+## Author
 
-#### 📝 Code Style
-
-We use:
-- **Black** for code formatting
-- **Flake8** for linting
-- **isort** for import sorting
-- **mypy** for type checking
-
-```bash
-# Auto-format code
-black . && isort .
-
-# Run all checks
-pre-commit run --all-files
-```
-
-#### 🚀 Pull Request Process
-
-1. **Update Documentation** - Include docs for new features
-2. **Add Tests** - Ensure test coverage > 90%
-3. **Update Changelog** - Document changes in `CHANGELOG.md`
-4. **Submit PR** - Use descriptive title and detailed description
-
----
-
-## 🔧 API Reference
-
-### REST Endpoints
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/` | Redirect to browse | ✅ |
-| GET | `/browse/<path>` | Browse directory | ✅ |
-| GET | `/download/<path>` | Download file | ✅ |
-| POST | `/upload/<path>` | Upload file | ✅ |
-| POST | `/delete/<path>` | Delete file/directory | ✅ |
-| POST | `/rename/<path>` | Rename file/directory | ✅ |
-| POST | `/mkdir/<path>` | Create directory | ✅ |
-| GET | `/preview/<path>` | Preview file | ✅ |
-| GET | `/login` | Login page | ❌ |
-| POST | `/login` | Authenticate | ❌ |
-| GET | `/logout` | Logout session | ✅ |
-
-### JavaScript API
-
-```javascript
-// Theme management
-uploadserver.setTheme('tokyo-night');
-uploadserver.getTheme();
-
-// File operations
-uploadserver.uploadFile(file, path, onProgress);
-uploadserver.deleteFile(path, onSuccess);
-uploadserver.renameFile(oldPath, newName, onSuccess);
-
-// UI utilities
-uploadserver.showModal(type, data);
-uploadserver.hideModal(type);
-uploadserver.showToast(message, type);
-```
-
----
-
-## 🏗️ Architecture
-
-### Security Features
-
-- **Path Sanitization** - Prevents directory traversal attacks
-- **File Type Validation** - Configurable allowed file extensions
-- **Size Limits** - Prevents disk space exhaustion
-- **Rate Limiting** - Protection against abuse (coming soon)
-- **CORS Configuration** - Secure cross-origin requests
-
-### Performance Optimizations
-
-- **Lazy Loading** - On-demand file loading for large directories
-- **Caching** - Intelligent caching for static assets
-- **Compression** - Automatic gzip compression
-- **Chunked Transfers** - Efficient large file handling
-
-### Browser Compatibility
-
-| Browser | Version | Status |
-|---------|---------|--------|
-| Chrome | 90+ | ✅ Full Support |
-| Firefox | 88+ | ✅ Full Support |
-| Safari | 14+ | ✅ Full Support |
-| Edge | 90+ | ✅ Full Support |
-| IE | 11 | ⚠️ Limited Support |
-
----
-
-## 🤝 Community & Support
-
-### Get Help
-
-- **Documentation** - [Full docs at docs.uploadserver.io](https://docs.uploadserver.io)
-- **Discord** - [Join our Discord server](https://discord.gg/uploadserver)
-- **GitHub Issues** - [Report bugs and request features](https://github.com/MuadzHdz/uploadserver/issues)
-- **Stack Overflow** - Tag questions with `uploadserver`
-
-### Contributing Organizations
-
-Special thanks to these organizations that make this project possible:
-
-- [![GitHub](https://img.shields.io/badge/G Sponsor-white?logo=github)](https://github.com/sponsors)
-- [![Open Collective](https://img.shields.io/badge/Open%20Collective-sponsor-7FAD42?logo=open-collective)](https://opencollective.com/uploadserver)
-
----
-
-## 📊 Benchmarks
-
-### Performance Metrics
-
-| Metric | UploadServer Pro | Python http.server | nginx |
-|--------|------------------|-------------------|-------|
-| File Upload | 125 MB/s | 45 MB/s | 180 MB/s |
-| Directory Listing | 8ms | 25ms | 5ms |
-| Memory Usage | 15MB | 8MB | 12MB |
-| Concurrent Connections | 1000 | 50 | 10000 |
-
-*Tests performed on Intel i7-10700K, 32GB RAM, NVMe SSD*
-
----
-
-## 🗺️ Roadmap
-
-### Version 2.0 (Q1 2024)
-- [ ] **Real-time Collaboration** - Multiple users editing files simultaneously
-- [ ] **Plugin System** - Extensible architecture for custom functionality
-- [ ] **Advanced Search** - Full-text search with filters and tagging
-- [ ] **Version Control** - Git integration for file history
-
-### Version 2.1 (Q2 2024)
-- [ ] **Cloud Storage** - Integration with S3, Google Drive, Dropbox
-- [ ] **WebDAV Support** - Standard web protocol for file sharing
-- [ ] **Mobile Apps** - Native iOS and Android applications
-- [ ] **Desktop Client** - Electron-based desktop application
-
-### Version 3.0 (Q3 2024)
-- [ ] **AI Assistant** - Smart file organization and insights
-- [ ] **Blockchain Integration** - Decentralized file storage option
-- [ ] **Advanced Security** - End-to-end encryption and zero-knowledge proofs
-- [ ] **Enterprise Features** - SSO, LDAP integration, audit logs
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-### TL;DR
-
-✅ **You can:**
-- Use commercially
-- Modify
-- Distribute
-- Use privately
-- Sublicense
-
-❌ **You cannot:**
-- Hold liable
-- Warranty
-
----
-
-## 🙏 Credits & Acknowledgments
-
-### Core Contributors
-
-- **[@MuadzHdz](https://github.com/MuadzHdz)** - Creator & Lead Developer
-- **[Your Name Here](https://github.com/)** - Become a contributor!
-
-### Special Thanks
-
-- **Flask Team** - Excellent web framework
-- **Catppuccin** - Beautiful color palette
-- **Material Design** - Icon library and design principles
-- **Open Source Community** - For inspiration and feedback
-
-### Dependencies
-
-- [Flask](https://flask.palletsprojects.com/) - Web framework
-- [Werkzeug](https://werkzeug.palletsprojects.com/) - WSGI utilities
-- [Qrcode](https://github.com/lincolnloop/python-qrcode) - QR code generation
-
----
-
-## 📈 Statistics
-
-![GitHub stars](https://img.shields.io/github/stars/MuadzHdz/uploadserver?style=social)
-![GitHub forks](https://img.shields.io/github/forks/MuadzHdz/uploadserver?style=social)
-![GitHub issues](https://img.shields.io/github/issues/MuadzHdz/uploadserver)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/MuadzHdz/uploadserver)
-
-**📊 Latest Release:** [v1.2.0](https://github.com/MuadzHdz/uploadserver/releases/tag/v1.2.0)  
-**📅 Last Updated:** January 2026  
-**👥 Contributors:** 15+ developers worldwide  
-
----
-
-<div align="center">
-
-**⭐ Star this repository if it helped you!**  
-**🔄 Fork it to customize for your needs**  
-**🚀 Use it in your projects and let us know!**
-
-Made with ❤️ by [@MuadzHdz](https://github.com/MuadzHdz)
-
-[![Buy Me A Coffee](https://img.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/muadzhdz)
-
-</div>
+Mu'adz - adzhdz73@gmail.com

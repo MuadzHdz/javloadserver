@@ -7,8 +7,10 @@ import os
 import argparse
 import signal
 import threading
+import time
 from pathlib import Path
 from datetime import datetime, timezone
+from dataclasses import dataclass, field
 
 from uploadserver.advanced_server import create_app
 from uploadserver.models import db, SystemSettings
@@ -16,101 +18,117 @@ from uploadserver.search_engine import SEARCH_ENGINE
 from uploadserver import __version__
 
 
-def setup_background_tasks(app):
-    """Setup background tasks for file monitoring and maintenance"""
+@dataclass
+class BackgroundTaskManager:
+    """Manages background tasks with proper cleanup support"""
 
-    def file_monitor():
-        """Monitor file system changes and update search index"""
-        from watchdog.observers import Observer
-        from watchdog.events import FileSystemEventHandler
+    app: any = field(default=None)
+    observer: any = field(default=None)
+    cleanup_event: threading.Event = field(default_factory=threading.Event)
+    threads: list = field(default_factory=list)
 
-        class FileChangeHandler(FileSystemEventHandler):
-            def on_modified(self, event):
-                if not event.is_directory:
-                    print(f"File modified: {event.src_path}")
-                    # Update search index in background
+    def start(self):
+        if self.app is None:
+            return
 
-            def on_created(self, event):
-                if not event.is_directory:
-                    print(f"File created: {event.src_path}")
+        self.cleanup_event.clear()
 
-            def on_deleted(self, event):
-                if not event.is_directory:
-                    print(f"File deleted: {event.src_path}")
+        cleanup_thread = threading.Thread(target=self._cleanup_task, daemon=True)
+        cleanup_thread.start()
+        self.threads.append(cleanup_thread)
 
-        event_handler = FileChangeHandler()
-        observer = Observer()
-        observer.schedule(event_handler, app.config["UPLOAD_FOLDER"], recursive=True)
-        observer.start()
-        return observer
+        backup_thread = threading.Thread(target=self._backup_task, daemon=True)
+        backup_thread.start()
+        self.threads.append(backup_thread)
 
-    def cleanup_expired_sessions():
+        try:
+            from watchdog.observers import Observer
+            from watchdog.events import FileSystemEventHandler
+
+            class FileChangeHandler(FileSystemEventHandler):
+                def on_modified(self, event):
+                    if not event.is_directory:
+                        print(f"File modified: {event.src_path}")
+
+                def on_created(self, event):
+                    if not event.is_directory:
+                        print(f"File created: {event.src_path}")
+
+                def on_deleted(self, event):
+                    if not event.is_directory:
+                        print(f"File deleted: {event.src_path}")
+
+            self.observer = Observer()
+            self.observer.schedule(
+                FileChangeHandler(), self.app.config["UPLOAD_FOLDER"], recursive=True
+            )
+            self.observer.start()
+        except ImportError:
+            print("Watchdog not installed - file monitoring disabled")
+        except Exception as e:
+            print(f"Failed to start file monitor: {e}")
+
+    def _cleanup_task(self):
         """Clean up expired user sessions"""
         from uploadserver.models import UserSession
-        from datetime import datetime, timezone, timedelta
 
-        while True:
+        while not self.cleanup_event.is_set():
             try:
-                expired_sessions = UserSession.query.filter(
-                    UserSession.expires_at < datetime.now(timezone.utc)
-                ).all()
+                with self.app.app_context():
+                    expired_sessions = UserSession.query.filter(
+                        UserSession.expires_at < datetime.now(timezone.utc)
+                    ).all()
 
-                for session in expired_sessions:
-                    db.session.delete(session)
+                    for session in expired_sessions:
+                        db.session.delete(session)
 
-                if expired_sessions:
-                    db.session.commit()
-                    print(f"Cleaned up {len(expired_sessions)} expired sessions")
-
-                # Sleep for 1 hour before next cleanup
-                import time
-
-                time.sleep(3600)
-
+                    if expired_sessions:
+                        db.session.commit()
+                        print(f"Cleaned up {len(expired_sessions)} expired sessions")
             except Exception as e:
                 print(f"Error in session cleanup: {e}")
-                import time
 
-                time.sleep(300)  # Retry in 5 minutes
+            self.cleanup_event.wait(3600)
 
-    def backup_database():
+    def _backup_task(self):
         """Periodic database backup"""
         import shutil
-        from datetime import datetime
 
-        while True:
+        while not self.cleanup_event.is_set():
             try:
-                if hasattr(app, "config") and "SQLALCHEMY_DATABASE_URI" in app.config:
-                    db_path = app.config["SQLALCHEMY_DATABASE_URI"].replace(
+                if (
+                    hasattr(self.app, "config")
+                    and "SQLALCHEMY_DATABASE_URI" in self.app.config
+                ):
+                    db_path = self.app.config["SQLALCHEMY_DATABASE_URI"].replace(
                         "sqlite:///", ""
                     )
                     if os.path.exists(db_path):
                         backup_path = f"{db_path}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
                         shutil.copy2(db_path, backup_path)
                         print(f"Database backed up to {backup_path}")
-
-                # Sleep for 24 hours before next backup
-                import time
-
-                time.sleep(86400)
-
             except Exception as e:
                 print(f"Error in database backup: {e}")
-                import time
 
-                time.sleep(3600)  # Retry in 1 hour
+            self.cleanup_event.wait(86400)
 
-    # Start background threads
-    file_monitor_thread = threading.Thread(target=file_monitor, daemon=True)
-    file_monitor_thread.start()
+    def stop(self):
+        """Stop all background tasks gracefully"""
+        self.cleanup_event.set()
 
-    cleanup_thread = threading.Thread(target=cleanup_expired_sessions, daemon=True)
-    cleanup_thread.start()
+        if self.observer:
+            self.observer.stop()
+            self.observer.join(timeout=5)
+            self.observer = None
 
-    backup_thread = threading.Thread(target=backup_database, daemon=True)
-    backup_thread.start()
+        print("Background tasks stopped")
 
-    return file_monitor_thread
+
+def setup_background_tasks(app):
+    """Setup background tasks for file monitoring and maintenance"""
+    manager = BackgroundTaskManager(app=app)
+    manager.start()
+    return manager
 
 
 def main():

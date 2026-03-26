@@ -54,13 +54,7 @@ try:
 except ImportError:
     QR_AVAILABLE = False
 
-try:
-    from flask import Flask
-    from werkzeug.utils import secure_filename
-
-    FLASK_AVAILABLE = True
-except ImportError:
-    FLASK_AVAILABLE = False
+FLASK_AVAILABLE = True
 
 # Global variables
 UPLOAD_DIRECTORY = os.getcwd()
@@ -80,7 +74,6 @@ from .models import (
 )
 from .search_engine import SearchEngine
 
-UPLOAD_DIRECTORY = os.getcwd()
 SEARCH_ENGINE = SearchEngine()
 
 login_manager = LoginManager()
@@ -123,12 +116,12 @@ def create_app():
     app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100MB max file size
 
     # Initialize extensions
-    socketio = SocketIO(cors_allowed_origins="*")
-    login_manager = LoginManager()
+    socketio = SocketIO(
+        cors_allowed_origins=os.getenv("CORS_ORIGINS", "localhost,127.0.0.1")
+    )
     login_manager.login_view = "login"
     db.init_app(app)
     socketio.init_app(app, async_mode="threading")
-    login_manager.init_app(app)
 
     with app.app_context():
         # Create tables
@@ -220,6 +213,10 @@ def create_app():
         logout_user()
         flash("You have been logged out.", "success")
         return redirect(url_for("login"))
+
+    @app.route("/health")
+    def health():
+        return {"status": "ok", "version": __version__}, 200
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -401,8 +398,9 @@ def create_app():
                 .scalar()
                 or 0
             )
-            file_size = len(file.read())
-            file.seek(0)  # Reset file pointer
+            file.seek(0, 2)
+            file_size = file.tell()
+            file.seek(0)
 
             if current_size + file_size > current_user.storage_quota:
                 flash("Storage quota exceeded.", "error")
@@ -441,7 +439,7 @@ def create_app():
                     owner_id=current_user.id,
                     parent_directory=path,
                     is_directory=False,
-                    metadata={
+                    file_metadata={
                         "upload_ip": request.remote_addr,
                         "upload_user_agent": request.headers.get("User-Agent"),
                     },
@@ -554,26 +552,22 @@ def create_app():
         mime_type, _ = mimetypes.guess_type(file_path)
 
         # Determine preview capability
+        from .utils import get_previewable_extensions
+
         is_text = (
             mime_type
             and mime_type.startswith("text/")
-            or filename.endswith(
-                (".txt", ".md", ".py", ".js", ".html", ".css", ".json", ".xml", ".csv")
-            )
+            or filename.endswith(get_previewable_extensions()[:8])
         )
         is_image = mime_type and mime_type.startswith("image/")
 
         content = None
         if is_text and file_obj.file_size < 1024 * 1024:  # 1MB limit
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-            except UnicodeDecodeError:
-                try:
-                    with open(file_path, "r", encoding="latin-1") as f:
-                        content = f.read()
-                except:
-                    is_text = False
+            from .utils import read_file_content
+
+            content = read_file_content(file_path)
+            if content is None:
+                is_text = False
 
         # Log activity
         activity = Activity(
@@ -667,5 +661,8 @@ def init_system_settings():
 
 def is_shared_directory(path):
     """Check if directory contains shared files"""
-    # This would be implemented based on your sharing logic
-    return False
+    shared_files = File.query.filter(
+        File.parent_directory.startswith(path),
+        File.is_public == True,
+    ).first()
+    return shared_files is not None

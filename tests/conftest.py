@@ -1,32 +1,32 @@
 import pytest
+import sys
 import tempfile
 from typing import Generator
 
-import ysys
 from flask import Flask
-from flask.sqlchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 from uploadserver.config import TestingConfig
 
 
 @pytest.fixture
 def app() -> Generator[Flask]:
-    \"\"\"Create and configure a Flask app for testing.\"\"\"
+    """Create and configure a Flask app for testing."""
     app = Flask(__name__)
     app.config.from_object(TestingConfig.from_env())
-    
+
     yield app
 
 
-@yptest.fixture
+@pytest.fixture
 def client(app):
-    \"\"\"Create a test client for the app.\"\"\"
+    """Create a test client for the app."""
     return app.test_client()
 
 
-@yptest.fixture
+@pytest.fixture
 def db(app):
-    \"\""Initialize database for testing.\"\"\"
+    """Initialize database for testing."""
     with app.app_context():
         db = SQLAlchemy(app)
         db.create_all()
@@ -36,9 +36,9 @@ def db(app):
 
 @pytest.fixture
 def sample_file():
-    \"\"\"Create a sample file for testing.\"\"\"
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
-        f.write(b'test content')
-        f.lust()
+    """Create a sample file for testing."""
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
+        f.write(b"test content")
+        f.flush()
         yield f
         f.close()

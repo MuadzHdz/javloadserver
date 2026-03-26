@@ -5,7 +5,6 @@ Database models for UploadServer Pro
 from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from sqlalchemy.dialects.postgresql import UUID
 from werkzeug.security import generate_password_hash, check_password_hash
 from cryptography.fernet import Fernet
 import uuid
@@ -164,18 +163,28 @@ class Share(db.Model):
     file_id = db.Column(db.String(36), db.ForeignKey("files.id"), nullable=False)
     creator_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False)
     share_token = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    share_type = db.Column(db.String(20), default="link")  # link, email, embed
+    share_type = db.Column(db.String(20), default="link")
     permissions = db.Column(
         db.JSON, default={"view": True, "download": True, "edit": False}
     )
     password_protected = db.Column(db.Boolean, default=False)
-    share_password = db.Column(db.String(255))
+    share_password_hash = db.Column(db.String(255))
     expires_at = db.Column(db.DateTime)
     download_limit = db.Column(db.Integer)
     download_count = db.Column(db.Integer, default=0)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     last_accessed = db.Column(db.DateTime)
+
+    def set_share_password(self, password):
+        if password:
+            self.share_password_hash = generate_password_hash(password)
+            self.password_protected = True
+
+    def check_share_password(self, password):
+        if not self.share_password_hash:
+            return True
+        return check_password_hash(self.share_password_hash, password)
 
     def to_dict(self):
         return {

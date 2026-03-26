@@ -6,6 +6,7 @@ import threading
 import webbrowser
 import mimetypes
 import json
+import hmac
 from functools import wraps
 from getpass import getpass
 from pathlib import Path
@@ -72,25 +73,9 @@ def create_app():
 
     @app.template_filter("file_previewable")
     def file_previewable_filter(filename):
-        previewable_extensions = (
-            ".txt",
-            ".md",
-            ".py",
-            ".js",
-            ".html",
-            ".css",
-            ".json",
-            ".xml",
-            ".csv",
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".bmp",
-            ".svg",
-            ".webp",
-        )
-        return filename.lower().endswith(previewable_extensions)
+        from .utils import get_previewable_extensions
+
+        return filename.lower().endswith(get_previewable_extensions())
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
@@ -98,7 +83,8 @@ def create_app():
             return redirect(url_for("index"))
 
         if request.method == "POST":
-            if request.form.get("password") == PASSWORD:
+            submitted_password = request.form.get("password", "")
+            if PASSWORD and hmac.compare_digest(submitted_password, PASSWORD):
                 session["logged_in"] = True
                 flash("Login successful!", "success")
                 next_url = request.args.get("next")
@@ -114,6 +100,10 @@ def create_app():
         session.pop("logged_in", None)
         flash("You have been logged out.", "success")
         return redirect(url_for("login"))
+
+    @app.route("/health")
+    def health():
+        return {"status": "ok", "version": __version__}, 200
 
     @app.route("/")
     @login_required

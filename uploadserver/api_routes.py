@@ -2,9 +2,10 @@
 Advanced API endpoints for UploadServer Pro
 """
 
-from flask import jsonify, request, abort
+from flask import jsonify, request, abort, url_for
 from flask_login import login_required, current_user
-from datetime import datetime, timezone
+from functools import wraps
+from datetime import datetime, timezone, timedelta
 import uuid
 import os
 
@@ -191,6 +192,7 @@ def register_api_routes(app):
                         os.remove(file_path)
 
                     db.session.delete(file_obj)
+                    SEARCH_ENGINE.delete_file(file_id)
                     results.append(
                         {"file_id": file_id, "status": "success", "message": "Deleted"}
                     )
@@ -325,11 +327,12 @@ def register_api_routes(app):
             share_token=str(uuid.uuid4()),
             share_type=share_type,
             permissions=permissions,
-            password_protected=password_protected,
-            share_password=share_password if password_protected else None,
             expires_at=datetime.fromisoformat(expires_at) if expires_at else None,
             download_limit=download_limit,
         )
+
+        if password_protected and share_password:
+            share.set_share_password(share_password)
 
         db.session.add(share)
         db.session.commit()
@@ -383,7 +386,7 @@ def register_api_routes(app):
             data = request.get_json()
             password = data.get("password", "")
 
-            if not share.check_password(password):
+            if not share.check_share_password(password):
                 return jsonify({"error": "Invalid password"}), 401
 
         # Update download count

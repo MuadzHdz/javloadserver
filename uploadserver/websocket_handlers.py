@@ -5,7 +5,7 @@ Real-time WebSocket handlers for UploadServer Pro
 from flask_socketio import emit, join_room, leave_room, close_room
 from flask_login import current_user
 from flask import request
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 from .models import Activity, UserSession
@@ -24,7 +24,7 @@ def handle_connect(auth):
         session_token=request.sid,
         ip_address=request.environ.get("HTTP_X_FORWARDED_FOR", request.remote_addr),
         user_agent=request.headers.get("User-Agent"),
-        expires_at=datetime.utcnow().replace(hour=23, minute=59, second=59),
+        expires_at=datetime.now(timezone.utc).replace(hour=23, minute=59, second=59),
     )
     db.session.add(session_data)
     db.session.commit()
@@ -42,7 +42,7 @@ def handle_connect(auth):
         {
             "user_id": current_user.id,
             "session_id": request.sid,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         room=room,
     )
@@ -53,7 +53,7 @@ def handle_connect(auth):
         {
             "user_id": current_user.id,
             "username": current_user.username,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         room="system",
         include_self=False,
@@ -79,7 +79,7 @@ def handle_disconnect():
             {
                 "user_id": current_user.id,
                 "username": current_user.username,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             room="system",
             include_self=False,
@@ -103,7 +103,7 @@ def handle_join_file_room(data):
                 "file_id": file_id,
                 "user_id": current_user.id,
                 "username": current_user.username,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             room=room,
         )
@@ -136,7 +136,7 @@ def handle_leave_file_room(data):
                 "file_id": file_id,
                 "user_id": current_user.id,
                 "username": current_user.username,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             room=room,
         )
@@ -175,7 +175,7 @@ def handle_file_operation(data):
                 "user_id": current_user.id,
                 "username": current_user.username,
                 "details": details,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             room=room,
             include_self=False,
@@ -189,7 +189,7 @@ def handle_file_operation(data):
             "operation": operation,
             "file_id": file_id,
             "details": details,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         room=user_room,
         include_self=False,
@@ -214,7 +214,7 @@ def handle_typing_indicator(data):
                 {
                     "user_id": current_user.id,
                     "username": current_user.username,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 room=room,
                 include_self=False,
@@ -225,7 +225,7 @@ def handle_typing_indicator(data):
                 {
                     "user_id": current_user.id,
                     "username": current_user.username,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 room=room,
                 include_self=False,
@@ -251,7 +251,7 @@ def handle_comment_added(data):
                 "comment": comment_data,
                 "user_id": current_user.id,
                 "username": current_user.username,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             room=room,
         )
@@ -285,7 +285,7 @@ def handle_share_created(data):
                 "file_id": file_id,
                 "share": share_data,
                 "shared_by": current_user.username,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             room=room,
         )
@@ -298,7 +298,7 @@ def handle_share_created(data):
                 "share": share_data,
                 "created_by": current_user.username,
                 "user_id": current_user.id,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             room="system",
         )
@@ -320,7 +320,7 @@ def handle_system_broadcast(data):
                 "message": message,
                 "type": message_type,
                 "sent_by": current_user.username,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             broadcast=True,
         )
@@ -336,6 +336,6 @@ def default_error_handler(e):
             "error",
             {
                 "message": "An error occurred during the operation",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
         )
