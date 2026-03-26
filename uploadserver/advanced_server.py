@@ -119,8 +119,9 @@ def create_app():
     socketio = SocketIO(
         cors_allowed_origins=os.getenv("CORS_ORIGINS", "localhost,127.0.0.1")
     )
-    login_manager.login_view = "login"
     db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = "login"
     socketio.init_app(app, async_mode="threading")
 
     with app.app_context():
