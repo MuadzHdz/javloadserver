@@ -257,52 +257,44 @@ def create_app():
     @app.route("/dashboard")
     def dashboard():
         """Main dashboard - if no password set, allow access without login"""
+        # Check if password is required
         if PASSWORD and not current_user.is_authenticated:
             return redirect(url_for("login"))
-        
-        # Get current user (use guest if not logged in and no password set)
-        user_id = current_user.id if current_user.is_authenticated else None
-        
-        # Get user statistics
-        if user_id:
-            total_files = File.query.filter_by(owner_id=user_id).count()
+
+        # Get user info - use guest if not authenticated
+        user = current_user if current_user.is_authenticated else None
+
+        # Get user statistics if logged in
+        if user:
+            total_files = File.query.filter_by(owner_id=user.id).count()
             total_size = (
                 db.session.query(db.func.sum(File.file_size))
-                .filter_by(owner_id=user_id)
+                .filter_by(owner_id=user.id)
                 .scalar()
                 or 0
             )
-                guest_user.set_password("guest")
-                db.session.add(guest_user)
-                db.session.commit()
-            login_user(guest_user)
-
-        # Get user statistics
-        total_size = (
-            db.session.query(db.func.sum(File.file_size))
-            .filter_by(owner_id=current_user.id)
-            .scalar()
-            or 0
-        )
-        recent_files = (
-            File.query.filter_by(owner_id=current_user.id)
-            .order_by(desc(File.created_at))
-            .limit(5)
-            .all()
-        )
-        recent_activities = (
-            Activity.query.filter_by(user_id=current_user.id)
-            .order_by(desc(Activity.created_at))
-            .limit(10)
-            .all()
-        )
-
-        # Storage usage
-        storage_percent = (
-            (total_size / current_user.storage_quota * 100)
-            if current_user.storage_quota > 0
-            else 0
-        )
+            recent_files = (
+                File.query.filter_by(owner_id=user.id)
+                .order_by(desc(File.created_at))
+                .limit(5)
+                .all()
+            )
+            recent_activities = (
+                Activity.query.filter_by(user_id=user.id)
+                .order_by(desc(Activity.created_at))
+                .limit(10)
+                .all()
+            )
+            storage_percent = (
+                (total_size / user.storage_quota * 100) if user.storage_quota > 0 else 0
+            )
+        else:
+            # Guest user - no stats
+            total_files = 0
+            total_size = 0
+            recent_files = []
+            recent_activities = []
+            storage_percent = 0
 
         theme = request.cookies.get("theme", "tokyo-night")
         return render_template(
