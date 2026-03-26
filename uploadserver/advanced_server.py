@@ -138,17 +138,20 @@ def create_app():
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
+        # If no password is set, redirect to dashboard directly
+        if not PASSWORD:
+            return redirect(url_for("dashboard"))
+
         if request.method == "POST":
-            username = request.form.get("username", "").strip()
             password = request.form.get("password", "")
             remember = request.form.get("remember", False)
 
-            if not username or not password:
-                flash("Username and password are required.", "error")
+            if not password:
+                flash("Password is required.", "error")
                 return render_template("login.html", theme="tokyo-night")
 
             # Check for admin fallback password
-            if PASSWORD and username == "admin" and password == PASSWORD:
+            if password == PASSWORD:
                 # Create temp admin user if not exists
                 admin_user = User.query.filter_by(username="admin").first()
                 if not admin_user:
@@ -166,33 +169,8 @@ def create_app():
                 flash("Login successful!", "success")
                 next_url = request.args.get("next")
                 return redirect(next_url or url_for("dashboard"))
-
-            # Check database users
-            user = User.query.filter_by(username=username).first()
-            if user and user.check_password(password):
-                if user.is_active:
-                    login_user(user, remember=remember)
-                    user.last_login = datetime.now(timezone.utc)
-                    db.session.commit()
-
-                    # Log activity
-                    activity = Activity(
-                        user_id=user.id,
-                        action="login",
-                        details={"ip": request.remote_addr},
-                        ip_address=request.remote_addr,
-                        user_agent=request.headers.get("User-Agent"),
-                    )
-                    db.session.add(activity)
-                    db.session.commit()
-
-                    flash(f"Welcome back, {user.username}!", "success")
-                    next_url = request.args.get("next")
-                    return redirect(next_url or url_for("dashboard"))
-                else:
-                    flash("Account is disabled. Please contact administrator.", "error")
             else:
-                flash("Invalid username or password.", "error")
+                flash("Invalid password.", "error")
 
         theme = request.cookies.get("theme", "tokyo-night")
         return render_template("login.html", theme=theme)
@@ -277,11 +255,29 @@ def create_app():
 
     @app.route("/")
     @app.route("/dashboard")
-    @login_required
     def dashboard():
-        """Main dashboard for logged-in users"""
+        """Main dashboard - if no password set, allow access without login"""
+        if PASSWORD and not current_user.is_authenticated:
+            return redirect(url_for("login"))
+        
+        # Get current user (use guest if not logged in and no password set)
+        user_id = current_user.id if current_user.is_authenticated else None
+        
         # Get user statistics
-        total_files = File.query.filter_by(owner_id=current_user.id).count()
+        if user_id:
+            total_files = File.query.filter_by(owner_id=user_id).count()
+            total_size = (
+                db.session.query(db.func.sum(File.file_size))
+                .filter_by(owner_id=user_id)
+                .scalar()
+                or 0
+            )
+                guest_user.set_password("guest")
+                db.session.add(guest_user)
+                db.session.commit()
+            login_user(guest_user)
+
+        # Get user statistics
         total_size = (
             db.session.query(db.func.sum(File.file_size))
             .filter_by(owner_id=current_user.id)
