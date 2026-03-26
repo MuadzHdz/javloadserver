@@ -10,6 +10,7 @@ Flask-Limiter==3.5.0
 # Database
 Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.0.5
+Flask-Login==0.6.3
 
 # Security
 Flask-Bcrypt==1.0.1
