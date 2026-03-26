@@ -18,8 +18,8 @@ Flask-JWT-Extended==4.5.3
 cryptography==41.0.7
 
 # QR Code
-qrcode==7.4.2
-pillow==10.1.0
+qrcode[pil]
+pillow
 
 # WebSocket
 Flask-SocketIO==5.3.6
