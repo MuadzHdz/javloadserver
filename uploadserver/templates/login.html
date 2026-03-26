@@ -87,6 +87,9 @@
                     <span class="material-icons">login</span> Login
                 </button>
             </form>
+            <p style="margin-top: 1rem; text-align: center;">
+                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+            </p>
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <ul class="flashes">
