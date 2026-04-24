@@ -1,6 +1,6 @@
-"""
+/*
 Advanced JavaScript features for FluxLoad Pro
-"""
+*/
 
 class FluxLoadPro {
     constructor() {
@@ -194,16 +194,16 @@ class FluxLoadPro {
             <div class="toolbar-content">
                 <span class="selection-count">0 selected</span>
                 <div class="toolbar-actions">
-                    <button class="btn small-btn" onclick="uploadServerPro.downloadSelected()">
+                    <button class="btn small-btn" onclick="fluxLoadPro.downloadSelected()">
                         <span class="material-icons">download</span> Download
                     </button>
-                    <button class="btn small-btn" onclick="uploadServerPro.moveSelected()">
+                    <button class="btn small-btn" onclick="fluxLoadPro.moveSelected()">
                         <span class="material-icons">folder</span> Move
                     </button>
-                    <button class="btn small-btn" onclick="uploadServerPro.copySelected()">
+                    <button class="btn small-btn" onclick="fluxLoadPro.copySelected()">
                         <span class="material-icons">content_copy</span> Copy
                     </button>
-                    <button class="btn small-btn danger" onclick="uploadServerPro.deleteSelected()">
+                    <button class="btn small-btn danger" onclick="fluxLoadPro.deleteSelected()">
                         <span class="material-icons">delete</span> Delete
                     </button>
                 </div>
@@ -432,8 +432,8 @@ class FluxLoadPro {
                     <div class="directory-suggestions" id="directory-suggestions"></div>
                 </div>
                 <div class="dialog-actions">
-                    <button class="btn secondary" onclick="uploadServerPro.closeMoveDialog()">Cancel</button>
-                    <button class="btn" onclick="uploadServerPro.executeMove('${fileIds.join(',')}')">Move</button>
+                    <button class="btn secondary" onclick="fluxLoadPro.closeMoveDialog()">Cancel</button>
+                    <button class="btn" onclick="fluxLoadPro.executeMove('${fileIds.join(',')}')">Move</button>
                 </div>
             </div>
         `;
@@ -455,7 +455,7 @@ class FluxLoadPro {
                 const suggestionsContainer = document.getElementById('directory-suggestions');
                 if (suggestionsContainer) {
                     suggestionsContainer.innerHTML = data.directories.map(dir => 
-                        `<div class="directory-item" onclick="uploadServerPro.selectDirectory('${dir.path}')">${dir.name}</div>`
+                        `<div class="directory-item" onclick="fluxLoadPro.selectDirectory('${dir.path}')">${dir.name}</div>`
                     ).join('');
                 }
             })
@@ -703,7 +703,7 @@ class FluxLoadPro {
 }
 
 // Initialize the application
-const uploadServerPro = new FluxLoadPro();
+const fluxLoadPro = new FluxLoadPro();
 
-// Global functions for onclick handlers
-window.uploadServerPro = uploadServerPro;
+// Make it globally available
+window.fluxLoadPro = fluxLoadPro;
