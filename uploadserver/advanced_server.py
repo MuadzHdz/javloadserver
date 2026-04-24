@@ -124,6 +124,19 @@ def create_app():
     login_manager.login_view = "login"
     socketio.init_app(app, async_mode="threading")
 
+    # Register template filters
+    @app.template_filter("file_previewable")
+    def file_previewable_filter(filename):
+        from .utils import get_previewable_extensions
+
+        return filename.lower().endswith(tuple(get_previewable_extensions()))
+
+    @app.template_filter("parent_dir")
+    def parent_dir_filter(path):
+        if not path:
+            return None
+        return os.path.dirname(path)
+
     with app.app_context():
         # Create tables
         db.create_all()
@@ -329,15 +342,17 @@ def create_app():
 
     @app.route("/browse/")
     @app.route("/browse/<path:path>")
-    @login_required
     def browse(path=""):
         """Browse files and directories"""
+        # Security check - require login if password is set
+        if PASSWORD and not current_user.is_authenticated:
+            return redirect(url_for("login"))
+
+        # Use guest username if not logged in
+        username = current_user.username if current_user.is_authenticated else "guest"
+
         # Security: Only allow user's own directory or shared files
-        if (
-            path
-            and not path.startswith(current_user.username)
-            and not is_shared_directory(path)
-        ):
+        if path and not path.startswith(username) and not is_shared_directory(path):
             flash("Access denied.", "error")
             return redirect(url_for("dashboard"))
 
@@ -347,7 +362,7 @@ def create_app():
             current_dir
         ).startswith(os.path.abspath(UPLOAD_DIRECTORY)):
             flash("Error: Invalid or inaccessible directory.", "error")
-            return redirect(url_for("browse", path=current_user.username))
+            return redirect(url_for("browse", path=username))
 
         try:
             items = os.listdir(current_dir)
@@ -362,9 +377,8 @@ def create_app():
         parent_dir = os.path.dirname(path) if path else None
 
         # Get database files for this directory
-        db_files = File.query.filter_by(
-            owner_id=current_user.id, parent_directory=path
-        ).all()
+        user_id = current_user.id if current_user.is_authenticated else "guest"
+        db_files = File.query.filter_by(owner_id=user_id, parent_directory=path).all()
 
         theme = request.cookies.get("theme", "tokyo-night")
 
@@ -494,7 +508,6 @@ def create_app():
             return redirect(url_for("browse", path=path))
 
     @app.route("/download/<path:filename>")
-    @login_required
     def download_file(filename):
         """Download file with access tracking"""
         file_obj = File.query.filter_by(

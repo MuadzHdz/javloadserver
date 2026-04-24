@@ -173,7 +173,7 @@
             <h1>Dashboard</h1>
             <div class="user-info">
                 <span class="material-icons">account_circle</span>
-                <span>{{ current_user.full_name or current_user.username }}</span>
+                <span>{{ user.full_name or user.username }}</span>
             </div>
         </header>
 
@@ -187,7 +187,7 @@
                     <div class="stat-card-title">Storage Used</div>
                 </div>
                 <div class="stat-card-value">{{ "%.2f"|format(total_size / 1024 / 1024) }} MB</div>
-                <div class="stat-card-subtitle">of {{ "%.2f"|format(current_user.storage_quota / 1024 / 1024) }} MB</div>
+                <div class="stat-card-subtitle">of {{ "%.2f"|format(user.storage_quota / 1024 / 1024) }} MB</div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: {{ storage_percent }}%"></div>
                 </div>
