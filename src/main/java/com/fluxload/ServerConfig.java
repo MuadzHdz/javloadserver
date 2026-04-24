@@ -75,6 +75,7 @@ public class ServerConfig {
         }
     }
 
+    @SuppressWarnings("resource")
     private String promptForPassword() {
         java.io.Console console = System.console();
         if (console != null) {

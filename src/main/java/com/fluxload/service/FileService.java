@@ -1,6 +1,6 @@
 package com.fluxload.service;
 
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -151,13 +151,7 @@ public class FileService {
         return filename;
     }
 
-    // Helper method to format file sizes
-    private String formatFileSize(long bytes) {
-        if (bytes < 1024) return bytes + " B";
-        int exp = (int) (Math.log(bytes) / Math.log(1024));
-        char pre = "KMGTPE".charAt(exp - 1);
-        return String.format("%.1f %sB", bytes / Math.pow(1024, exp), pre);
-    }
+
 
     // Interface for progress tracking
     public interface UploadProgressListener {

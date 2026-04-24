@@ -17,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.file.Files;
+
 import java.nio.file.Path;
 import java.util.List;
 
@@ -79,6 +79,7 @@ public class FileController {
 
     @GetMapping("/download")
     @ResponseBody
+    @SuppressWarnings("null")
     public ResponseEntity<Object> serveFile(@RequestParam String filename) {
         if (filename == null || filename.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Filename not provided");
@@ -110,6 +111,7 @@ public class FileController {
 
     @GetMapping("/preview")
     @ResponseBody
+    @SuppressWarnings("null")
     public ResponseEntity<Object> previewFile(@RequestParam String filename) {
         if (filename == null || filename.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Filename not provided");

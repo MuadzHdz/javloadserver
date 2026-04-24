@@ -13,6 +13,7 @@ import java.util.List;
 public class ApplicationConfig {
 
     @Bean
+    @SuppressWarnings("null")
     public ByteArrayHttpMessageConverter byteArrayHttpMessageConverter() {
         ByteArrayHttpMessageConverter arrayHttpMessageConverter = new ByteArrayHttpMessageConverter();
         arrayHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(

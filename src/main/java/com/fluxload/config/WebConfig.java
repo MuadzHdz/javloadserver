@@ -19,7 +19,8 @@ public class WebConfig implements WebMvcConfigurer {
     private String[] allowedHeaders;
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    @SuppressWarnings("null")
+    public void addCorsMappings(@org.springframework.lang.NonNull CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins(allowedOrigins)
                 .allowedMethods(allowedMethods)
@@ -38,7 +39,8 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    @SuppressWarnings("null")
+    public void addResourceHandlers(@org.springframework.lang.NonNull ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/")
                 .setCachePeriod(3600)

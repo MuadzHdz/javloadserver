@@ -6,7 +6,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.awt.Desktop;
-import java.io.IOException;
+
 import java.net.URI;
 
 @SpringBootApplication

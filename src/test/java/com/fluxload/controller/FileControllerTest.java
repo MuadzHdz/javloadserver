@@ -30,6 +30,7 @@ class FileControllerTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void testBrowseEmptyDirectory() {
         org.springframework.ui.Model model = mock(org.springframework.ui.Model.class);
         MockHttpServletRequest request = new MockHttpServletRequest();
