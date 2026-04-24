@@ -12,7 +12,7 @@
 *.db-wal
 *.db-shm
 search_index/
-uploadserver/search_index/
+fluxload/search_index/
 
 # ==============================================
 # Python

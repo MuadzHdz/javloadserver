@@ -1,6 +1,6 @@
-# Contributing to UploadServer
+# Contributing to FluxLoad
 
-Thank you for your interest in contributing to UploadServer! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to FluxLoad! This document provides guidelines and information for contributors.
 
 ## Development Setup
 
@@ -12,8 +12,8 @@ Thank you for your interest in contributing to UploadServer! This document provi
 ***Steps:***
 
 ```bash
-git clone https://github.com/MuadzHdz/uploadserver.git
-cd uploadserver
+git clone https://github.com/MuadzHdz/fluxload.git
+cd fluxload
 python -m venv . venv../virtualenv
 activate ..virtualenv
 pip install -r requirements.txt
@@ -35,9 +35,9 @@ pytest --verbose
 - Use black for formatting
 
 ```bash
-black uploadserver tests
-flake8 uploadserver tests
-mypy[mypy/uploadserver
+black fluxload tests
+flake8 fluxload tests
+mypy[mypy/fluxload
 --ignore-missing-imports
 ```
 

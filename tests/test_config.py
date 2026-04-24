@@ -1,5 +1,5 @@
 import pytest
-from uploadserver.config import (
+from fluxload.config import (
     Config,
     DevelopmentConfig,
     ProductionConfig,

@@ -1,149 +1,97 @@
-# UploadServer
+# FluxLoad (Python Version)
 
-A professional file sharing server built with Flask. Simple, modern, and efficient.
+<div align="center">
 
-## Overview
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python)
+![Flask](https://img.shields.io/badge/Flask-2.3+-lightgrey.svg?style=for-the-badge&logo=flask)
+![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
 
-UploadServer is a Flask-based file sharing application that provides a clean web interface for uploading, browsing, and managing files. It offers two operation modes:
+**🚀 Server Berbagi File Modern, Cepat, dan Aman**
 
-- **Basic Mode**: Lightweight file server with password protection
-- **Advanced Mode**: Enterprise features including user management, file versioning, search, and WebSocket support
+</div>
 
-## Features
+---
 
-- File upload and download with drag-and-drop interface
-- Directory browsing with breadcrumb navigation
-- File preview for images and text files
-- Password protection for basic mode
-- User authentication and management (advanced mode)
-- Full-text search with Whoosh indexing
-- Real-time updates via WebSocket
-- Theme system with multiple color schemes
-- QR code generation for mobile access
-- RESTful API for programmatic access
+## 🎯 Tentang Project
 
+**FluxLoad** adalah aplikasi file server modern berbasis Python (Flask) yang memungkinkan kamu untuk membagikan, menerima, dan mengelola file dalam jaringan lokal (LAN) atau server public dengan sangat mudah.
 
-## Requirements
+FluxLoad memiliki antarmuka (UI) web yang sangat cantik dan responsif, fitur drag-and-drop, serta dukungan penuh untuk pencarian file dan manajemen pengguna.
 
-- Python 3.8+
-- Flask 2.3+
-- See `requirements.txt` for full dependencies
+> **⚠️ PERHATIAN (MULTIPLE BRANCHES):**
+> Repository ini memiliki 2 versi bahasa pemrograman. Saat ini Anda sedang berada di **Branch Python**. Jika Anda ingin melihat versi Java/Spring Boot, jalankan `git checkout java`.
 
-## Installation
+---
 
-```bash
-git clone https://github.com/MuadzHdz/uploadserver.git
-cd uploadserver
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+## ✨ Fitur Unggulan
 
-## Quick Start
+- 📂 **Drag & Drop Upload:** Upload banyak file sekaligus dengan mudah.
+- 🎨 **Tema Dinamis:** Tersedia berbagai tema premium (Dark Mode, Catppuccin, Nord, dll).
+- 🔍 **Pencarian Cepat:** Dilengkapi *search engine* internal untuk mencari file dengan instan.
+- 🔐 **Keamanan Tangguh:** Mulai dari proteksi password sederhana hingga manajemen User/Admin.
+- 📱 **Mobile Friendly:** Tampilan responsif + Auto-Generate QR Code agar mudah diakses lewat HP.
 
-### Basic Mode (Simple File Server)
+---
 
-```bash
-uploadserver -d /path/to/share -p 8000
-```
+## 🛠️ Cara Instalasi
 
-### Advanced Mode (Enterprise Features)
+FluxLoad versi Python sangat mudah diinstal. Pastikan komputer kamu sudah terinstall **Python 3.8** atau lebih baru.
 
-```bash
-uploadserver --dev-mode -d /path/to/share
-```
+1. **Clone Repository:**
+   ```bash
+   git clone https://github.com/MuadzHdz/FluxLoad.git
+   cd FluxLoad
+   git checkout python
+   ```
 
-## Command Line Options
+2. **Buat Virtual Environment (Sangat Disarankan):**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Untuk Linux/Mac
+   # venv\Scripts\activate   # Untuk Windows
+   ```
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-d, --directory` | Directory to serve | Current directory |
-| `-p, --port` | Port to listen on | 8000 |
-| `-b, --bind` | Bind address | 0.0.0.0 |
-| `--password` | Enable password protection | None |
-| `-o, --open` | Auto-open browser | False |
-| `--dev-mode` | Enable development mode | False |
+3. **Install Dependensi:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
+---
 
+## 🚀 Cara Penggunaan
 
-## Configuration
+FluxLoad menawarkan dua mode pengoperasian sesuai kebutuhanmu:
 
-### Environment Variables
+### Mode 1: Basic Mode (Sederhana & Cepat)
+Cocok jika kamu hanya ingin berbagi folder dengan teman di jaringan WiFi yang sama secara instan.
 
 ```bash
-export UPLOADSERVER_PORT=8000
-export UPLOADSERVER_BIND=0.0.0.0
-export UPLOADSERVER_PASSWORD=your-password
-export UPLOADSERVER_DIRECTORY=/path/to/files
+# Menjalankan server di port 8000 dan membagikan folder saat ini
+python -m fluxload -p 8000 -d /path/ke/folder/kamu
 ```
 
-### Configuration File
-
-Create `~/.uploadserver/config.yaml`:
-
-```yaml
-server:
-  port: 8080
-  bind: "0.0.0.0"
-  directory: "/shared/files"
-  password: "your-password"
+Jika ingin **dikunci dengan password**:
+```bash
+python -m fluxload -p 8000 --password rahasia123
 ```
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Redirect to browse |
-| GET | `/browse/<path>` | Browse directory |
-| GET | `/download/<path>` | Download file |
-| POST | `/upload/<path>` | Upload file |
-| POST | `/delete/<path>` | Delete file/directory |
-| POST | `/rename/<path>` | Rename file/directory |
-| POST | `/mkdir/<path>` | Create directory |
-| GET | `/preview/<path>` | Preview file |
-| GET | `/health` | Health check |
-| GET | `/login` | Login page (advanced) |
-| POST | `/login` | Authenticate (advanced) |
-
-## Project Structure
-
-```
-uploadserver/
-├── uploadserver/
-│   ├── __init__.py          # Package initialization
-│   ├── server.py            # Basic Flask server
-│   ├── advanced_server.py   # Enterprise server
-│   ├── advanced_main.py     # CLI entry point
-│   ├── models.py            # Database models
-│   ├── api_routes.py        # REST API
-│   ├── search_engine.py    # Whoosh search
-│   ├── utils.py             # Utilities
-│   ├── templates/           # Jinja2 templates
-│   └── static/              # CSS/JS assets
-├── tests/                   # Test suite
-
-├── requirements.txt       # Python dependencies
-└── setup.py                # Package configuration
-```
-
-## Testing
+### Mode 2: Advanced Mode (Fitur Enterprise & Login)
+Cocok jika kamu ingin membuat server file permanen dengan fitur manajemen akun (login/register).
 
 ```bash
-pytest tests/
+python -m fluxload --dev-mode -d /path/ke/folder/kamu
 ```
 
-## Security Features
+---
 
-- Path validation to prevent directory traversal
-- Secure filename handling with Werkzeug
-- Session management with secure cookies
-- Password hashing for user authentication
-- CORS configuration support
+## 🌐 Mengakses Server
+Setelah server berjalan, kamu akan melihat IP Address di terminal (misal: `http://192.168.1.5:8000`).
+Buka IP tersebut di browser laptop atau HP mana pun yang terhubung ke jaringan yang sama.
 
-## License
+---
 
-MIT License - See LICENSE file for details
+## 🤝 Berkontribusi
+Kami sangat terbuka untuk segala jenis kontribusi (Pull Request, Laporan Bug, atau Saran Fitur). Silakan *fork* repo ini dan berkreasi!
 
-## Author
-
-Mu'adz - adzhdz73@gmail.com
+## 📄 Lisensi
+Project ini berada di bawah lisensi MIT. Lihat file `LICENSE` untuk detailnya.

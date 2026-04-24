@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" data-th-data-theme="${theme}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - JavloadServer</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-container main {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .login-container form {
+            width: 100%;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: transparent;
+        }
+        
+        .input-group {
+            position: relative;
+            width: 100%;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding-right: 45px;
+            box-sizing: border-box;
+            background: transparent;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+        
+        .flashes {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .top-bar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container login-container">
+        <header>
+            <h1>Login</h1>
+        </header>
+
+        <main>
+            <form th:action="@{/login}" method="post">
+                <input type="hidden" name="username" value="user">
+                <div class="input-group">
+                    <span class="material-icons">vpn_key</span>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                    <span class="material-icons password-toggle" onclick="togglePassword()">visibility_off</span>
+                </div>
+                <button type="submit" class="btn">
+                    <span class="material-icons">login</span> Login
+                </button>
+            </form>
+            
+            <div th:if="${param.error}" class="flashes">
+                <ul class="flashes">
+                    <li class="error">Incorrect username or password.</li>
+                </ul>
+            </div>
+            
+            <div th:if="${param.logout}" class="flashes">
+                <ul class="flashes">
+                    <li class="success">You have been logged out.</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <div class="theme-switcher theme-carousel" aria-label="Theme switcher">
+        <button id="theme-prev" class="theme-btn" aria-label="Previous theme">&lt;</button>
+        <div class="theme-display" id="theme-display" role="status" aria-live="polite" tabindex="0"></div>
+        <button id="theme-next" class="theme-btn" aria-label="Next theme">&gt;</button>
+    </div>
+
+    <script th:src="@{/js/script.js}"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggle = document.querySelector('.password-toggle');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggle.textContent = 'visibility';
+            } else {
+                passwordInput.type = 'password';
+                toggle.textContent = 'visibility_off';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -6,7 +6,7 @@ from typing import Generator
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from uploadserver.config import TestingConfig
+from fluxload.config import TestingConfig
 
 
 @pytest.fixture

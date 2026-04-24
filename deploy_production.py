@@ -1,5 +1,5 @@
 """
-Production deployment script for UploadServer Pro
+Production deployment script for FluxLoad Pro
 """
 
 import os
@@ -96,12 +96,12 @@ def setup_production_environment():
     
     # Create production config
     config_content = f"""
-# Production Configuration for UploadServer Pro
+# Production Configuration for FluxLoad Pro
 import os
 from pathlib import Path
 
 # Database Configuration
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://uploadserver:password@localhost:5432/uploadserver')
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://fluxload:password@localhost:5432/fluxload')
 
 # Redis Configuration
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
@@ -111,13 +111,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', None)  # Must be set in production
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', None)  # Must be set in production
 
 # Storage
-UPLOAD_FOLDER = Path(os.getenv('UPLOAD_FOLDER', '/var/lib/uploadserver/uploads'))
+UPLOAD_FOLDER = Path(os.getenv('UPLOAD_FOLDER', '/var/lib/fluxload/uploads'))
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100MB
 DEFAULT_QUOTA = 10 * 1024 * 1024 * 1024  # 10GB
 
 # Monitoring
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
-LOG_FILE = Path(os.getenv('LOG_FILE', '/var/log/uploadserver/app.log'))
+LOG_FILE = Path(os.getenv('LOG_FILE', '/var/log/fluxload/app.log'))
 
 # Performance
 WORKERS = int(os.getenv('WORKERS', '4'))
@@ -136,8 +136,8 @@ ENABLE_2FA = os.getenv('ENABLE_2FA', 'false').lower() == 'true'
 
 # SSL/HTTPS
 FORCE_HTTPS = os.getenv('FORCE_HTTPS', 'false').lower() == 'true'
-SSL_CERT_PATH = os.getenv('SSL_CERT_PATH', '/etc/ssl/certs/uploadserver.crt')
-SSL_KEY_PATH = os.getenv('SSL_KEY_PATH', '/etc/ssl/private/uploadserver.key')
+SSL_CERT_PATH = os.getenv('SSL_CERT_PATH', '/etc/ssl/certs/fluxload.crt')
+SSL_KEY_PATH = os.getenv('SSL_KEY_PATH', '/etc/ssl/private/fluxload.key')
 """
     
     with open("config/production.py", "w") as f:
@@ -147,18 +147,18 @@ SSL_KEY_PATH = os.getenv('SSL_KEY_PATH', '/etc/ssl/private/uploadserver.key')
     
     # Create systemd service file
     service_content = f"""[Unit]
-Description=UploadServer Pro - Enterprise File Sharing Platform
+Description=FluxLoad Pro - Enterprise File Sharing Platform
 After=network.target postgresql.service redis.service
 Wants=postgresql.service redis.service
 
 [Service]
 Type=exec
-User=uploadserver
-Group=uploadserver
+User=fluxload
+Group=fluxload
 WorkingDirectory={Path.cwd()}
 Environment=PYTHONPATH={Path.cwd()}
 Environment=CONFIG_PATH=production
-ExecStart={sys.executable} -m uploadserver.advanced_main
+ExecStart={sys.executable} -m fluxload.advanced_main
     --database-url $DATABASE_URL
     --redis-url $REDIS_URL
     --workers $WORKERS
@@ -169,7 +169,7 @@ Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=uploadserver
+SyslogIdentifier=fluxload
 
 [Install]
 WantedBy=multi-user.target
@@ -178,15 +178,15 @@ WantedBy=multi-user.target
 WantedBy=graphical-session.target
 """
     
-    with open("uploadserverpro.service", "w") as f:
+    with open("fluxloadpro.service", "w") as f:
         f.write(service_content)
     
-    print("   ✅ Created uploadserverpro.service")
+    print("   ✅ Created fluxloadpro.service")
     
     # Create nginx configuration
     nginx_config = f"""
-# Nginx configuration for UploadServer Pro
-upstream uploadserver {{
+# Nginx configuration for FluxLoad Pro
+upstream fluxload {{
     server 127.0.0.1:8000;
     keepalive 32;
 }}
@@ -206,8 +206,8 @@ server {{
     server_name {{{{DOMAIN}}}};
     
     # SSL Configuration
-    ssl_certificate /etc/ssl/certs/uploadserver.crt;
-    ssl_certificate_key /etc/ssl/private/uploadserver.key;
+    ssl_certificate /etc/ssl/certs/fluxload.crt;
+    ssl_certificate_key /etc/ssl/private/fluxload.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
@@ -223,7 +223,7 @@ server {{
     
     # WebSocket Support
     location /socket.io {{
-        proxy_pass http://uploadserver;
+        proxy_pass http://fluxload;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -235,7 +235,7 @@ server {{
     }}
     
     location / {{
-        proxy_pass http://uploadserver;
+        proxy_pass http://fluxload;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -255,21 +255,21 @@ server {{
     
     # Static files (optional)
     location /static {{
-        alias /var/lib/uploadserver/static;
+        alias /var/lib/fluxload/static;
         expires 1y;
         add_header Cache-Control "public, immutable";
     }}
     
     # Logs
-    access_log /var/log/nginx/uploadserver_access.log;
-    error_log /var/log/nginx/uploadserver_error.log;
+    access_log /var/log/nginx/fluxload_access.log;
+    error_log /var/log/nginx/fluxload_error.log;
 }}
 """
     
-    with open("nginx-uploadserverpro.conf", "w") as f:
+    with open("nginx-fluxloadpro.conf", "w") as f:
         f.write(nginx_config)
     
-    print("   ✅ Created nginx-uploadserverpro.conf")
+    print("   ✅ Created nginx-fluxloadpro.conf")
 
 def setup_ssl_certificates():
     """Generate self-signed SSL certificates for development"""
@@ -279,14 +279,14 @@ def setup_ssl_certificates():
     try:
         # Generate private key
         subprocess.run([
-            "openssl", "genrsa", "-out", "ssl/uploadserver.key", "2048"
+            "openssl", "genrsa", "-out", "ssl/fluxload.key", "2048"
         ], check=True, stdout=subprocess.DEVNULL)
         
         # Generate certificate
         subprocess.run([
-            "openssl", "req", "-new", "-x509", "-key", "ssl/uploadserver.key",
-            "-out", "ssl/uploadserver.crt", "-days", "365",
-            "-subj", "/C=US/ST=State/L=City/O=UploadServer/CN=localhost"
+            "openssl", "req", "-new", "-x509", "-key", "ssl/fluxload.key",
+            "-out", "ssl/fluxload.crt", "-days", "365",
+            "-subj", "/C=US/ST=State/L=City/O=FluxLoad/CN=localhost"
         ], check=True, stdout=subprocess.DEVNULL)
         
         print("   ✅ Generated self-signed SSL certificate")
@@ -297,7 +297,7 @@ def setup_ssl_certificates():
 
 def main():
     """Main deployment script"""
-    print("🚀 UploadServer Pro - Production Deployment Setup")
+    print("🚀 FluxLoad Pro - Production Deployment Setup")
     print("=" * 50)
     
     # Check system requirements
@@ -352,17 +352,17 @@ python-docx>=0.8.11
     print(f"1. Review and update config/production.py")
     print(f"2. Set environment variables (DATABASE_URL, SECRET_KEY, etc.)")
     print(f"3. Install systemd service:")
-    print(f"   sudo cp uploadserverpro.service /etc/systemd/system/")
+    print(f"   sudo cp fluxloadpro.service /etc/systemd/system/")
     print(f"   sudo systemctl daemon-reload")
-    print(f"   sudo systemctl enable uploadserverpro")
-    print(f"   sudo systemctl start uploadserverpro")
+    print(f"   sudo systemctl enable fluxloadpro")
+    print(f"   sudo systemctl start fluxloadpro")
     print(f"4. Configure nginx:")
-    print(f"   sudo cp nginx-uploadserverpro.conf /etc/nginx/sites-available/")
-    print(f"   sudo ln -s /etc/nginx/sites-available/uploadserverpro.conf /etc/nginx/sites-enabled/")
+    print(f"   sudo cp nginx-fluxloadpro.conf /etc/nginx/sites-available/")
+    print(f"   sudo ln -s /etc/nginx/sites-available/fluxloadpro.conf /etc/nginx/sites-enabled/")
     print(f"   sudo nginx -t && sudo systemctl reload nginx")
 
-    print(f"\n📚 Documentation: https://docs.uploadserverpro.com")
-    print(f"🐛 Issues: https://github.com/MuadzHdz/uploadserverpro/issues")
+    print(f"\n📚 Documentation: https://docs.fluxloadpro.com")
+    print(f"🐛 Issues: https://github.com/MuadzHdz/fluxloadpro/issues")
 
 if __name__ == "__main__":
     main()

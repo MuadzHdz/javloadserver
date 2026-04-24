@@ -4,7 +4,7 @@ For the safety of our users, we take security seriously.
 
 ## Reporting Vulnerabilities
 
-If you discover a security vulnerability in UploadServer, please report it to us responsibly.
+If you discover a security vulnerability in FluxLoad, please report it to us responsibly.
 
 - Email: [Security team](mailto::security@example.com)
 - Do not open a github issue for security vulnerabilities
