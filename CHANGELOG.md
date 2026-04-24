@@ -11,8 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Comprehensive test suite
 - CI/CD pipeline with GitHub Actions
-- Docker support with multi-stage builds
-- Docker Compose stack orchestration
+
 - Centralized configuration management
 - Type hints throughout the codebase
 - Security best practices implementation

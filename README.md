@@ -21,7 +21,7 @@ UploadServer is a Flask-based file sharing application that provides a clean web
 - Theme system with multiple color schemes
 - QR code generation for mobile access
 - RESTful API for programmatic access
-- Docker support for easy deployment
+
 
 ## Requirements
 
@@ -64,52 +64,7 @@ uploadserver --dev-mode -d /path/to/share
 | `-o, --open` | Auto-open browser | False |
 | `--dev-mode` | Enable development mode | False |
 
-## Docker Deployment
 
-### Option 1: Using Docker Compose (Recommended)
-
-```bash
-# Clone and navigate to project
-git clone https://github.com/MuadzHdz/uploadserver.git
-cd uploadserver
-
-# Build and run
-docker-compose up -d
-```
-
-The server will be available at `http://localhost:5000`.
-
-### Option 2: Using Docker Directly
-
-```bash
-# Build the image
-docker build -t uploadserver .
-
-# Run the container
-docker run -d \
-  --name uploadserver \
-  -p 5000:5000 \
-  -v /path/to/your/uploads:/app/uploads \
-  -e SECRET_KEY=your-secret-key \
-  uploadserver
-```
-
-Access the app at `http://localhost:5000`
-
-### Docker Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SECRET_KEY` | Flask secret key | dev-secret-key |
-| `DATABASE_URL` | Database connection | sqlite:///data/uploadserver.db |
-| `FLASK_ENV` | Environment | production |
-| `MAX_FILE_SIZE` | Max upload size (bytes) | 104857600 (100MB) |
-
-### Docker Volumes
-
-- `/app/uploads` - File storage
-- `/app/data` - Database location
-- `/app/logs` - Application logs
 
 ## Configuration
 
@@ -166,8 +121,7 @@ uploadserver/
 │   ├── templates/           # Jinja2 templates
 │   └── static/              # CSS/JS assets
 ├── tests/                   # Test suite
-├── Dockerfile              # Container definition
-├── docker-compose.yml      # Docker orchestration
+
 ├── requirements.txt       # Python dependencies
 └── setup.py                # Package configuration
 ```

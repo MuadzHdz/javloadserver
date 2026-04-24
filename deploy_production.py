@@ -295,128 +295,6 @@ def setup_ssl_certificates():
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("   ⚠️  OpenSSL not found. Please install OpenSSL or provide certificates.")
 
-def create_docker_files():
-    """Create Docker configuration files"""
-    print("\n🐳 Creating Docker files...")
-    
-    # Dockerfile
-    dockerfile = """FROM python:3.11-slim
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \\
-    gcc \\
-    libpq-dev \\
-    libmagic1 \\
-    libmagic-dev \\
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app
-
-# Copy requirements first
-COPY requirements.txt .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application
-COPY . .
-
-# Create non-root user
-RUN useradd --create-home --shell /bin/bash uploadserver
-RUN chown -R uploadserver:uploadserver /app
-USER uploadserver
-
-# Expose port
-EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\
-    CMD curl -f http://localhost:8000/health || exit 1
-
-# Start command
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "-k", "gevent", "uploadserver.advanced_server:app"]
-"""
-    
-    with open("Dockerfile", "w") as f:
-        f.write(dockerfile)
-    
-    # docker-compose.yml
-    compose_file = """version: '3.8'
-
-services:
-  uploadserver:
-    build: .
-    container_name: uploadserver-pro
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://uploadserver:password@postgres:5432/uploadserver
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
-      - SITE_NAME=${SITE_NAME:-UploadServer Pro}
-      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
-      - WORKERS=${WORKERS:-4}
-      - MAX_UPLOAD_SIZE=${MAX_UPLOAD_SIZE:-100MB}
-      - DEFAULT_QUOTA=${DEFAULT_QUOTA:-10GB}
-    volumes:
-      - ./uploads:/app/uploads
-      - ./logs:/app/logs
-      - ./search_index:/app/search_index
-      - ./ssl:/app/ssl
-      - ./backups:/app/backups
-    depends_on:
-      - postgres
-      - redis
-
-  postgres:
-    image: postgres:15-alpine
-    container_name: uploadserver-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: uploadserver
-      POSTGRES_USER: uploadserver
-      POSTGRES_PASSWORD: password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  redis:
-    image: redis:7-alpine
-    container_name: uploadserver-redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-
-  nginx:
-    image: nginx:alpine
-    container_name: uploadserver-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx-uploadserverpro.conf:/etc/nginx/conf.d/default.conf
-      - ./ssl:/etc/ssl/certs
-      - ./logs/nginx:/var/log/nginx
-    depends_on:
-      - uploadserver
-
-volumes:
-  postgres_data:
-  redis_data:
-"""
-    
-    with open("docker-compose.prod.yml", "w") as f:
-        f.write(compose_file)
-    
-    print("   ✅ Created Dockerfile and docker-compose.prod.yml")
-
 def main():
     """Main deployment script"""
     print("🚀 UploadServer Pro - Production Deployment Setup")
@@ -436,8 +314,7 @@ def main():
     # Setup SSL certificates
     setup_ssl_certificates()
     
-    # Create Docker files
-    create_docker_files()
+
     
     # Create requirements.txt
     requirements = """Flask>=2.3
@@ -483,8 +360,7 @@ python-docx>=0.8.11
     print(f"   sudo cp nginx-uploadserverpro.conf /etc/nginx/sites-available/")
     print(f"   sudo ln -s /etc/nginx/sites-available/uploadserverpro.conf /etc/nginx/sites-enabled/")
     print(f"   sudo nginx -t && sudo systemctl reload nginx")
-    print(f"5. Or use Docker:")
-    print(f"   docker-compose -f docker-compose.prod.yml up -d")
+
     print(f"\n📚 Documentation: https://docs.uploadserverpro.com")
     print(f"🐛 Issues: https://github.com/MuadzHdz/uploadserverpro/issues")
 
