@@ -1,7 +1,7 @@
-package com.javloadserver.controller;
+package com.fluxload.controller;
 
-import com.javloadserver.service.FileService;
-import com.javloadserver.UploadServerApplication;
+import com.fluxload.service.FileService;
+import com.fluxload.FluxLoadApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ public class FileController {
     protected final FileService fileService;
 
     public FileController() {
-        this.fileService = new FileService(UploadServerApplication.getServerConfig().getDirectory());
+        this.fileService = new FileService(FluxLoadApplication.getServerConfig().getDirectory());
     }
 
     @GetMapping("/")
@@ -142,7 +142,7 @@ public class FileController {
 
     @GetMapping("/login")
     public String login(Model model, HttpServletRequest request) {
-        if (!UploadServerApplication.getServerConfig().hasPassword()) {
+        if (!FluxLoadApplication.getServerConfig().hasPassword()) {
             return "redirect:/";
         }
 

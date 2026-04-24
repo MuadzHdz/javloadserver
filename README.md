@@ -1,19 +1,12 @@
-# JavloadServer
+# FluxLoad (Java Version)
 
 <div align="center">
 
-![JavloadServer Logo](https://img.shields.io/badge/JavloadServer-Enterprise%20File%20Server-blue?style=for-the-badge&logo=java)
+![Java](https://img.shields.io/badge/Java-17+-orange.svg?style=for-the-badge&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg?style=for-the-badge&logo=spring-boot)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Java versions](https://img.shields.io/badge/Java-17+-orange.svg?style=for-the-badge&logo=openjdk)](https://openjdk.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg?style=for-the-badge&logo=spring-boot)](https://spring.io/projects/spring-boot)
-[![Android](https://img.shields.io/badge/Android-Ready-green.svg?style=for-the-badge&logo=android)](https://developer.android.com/)
-
-**🚀 Server Berbagi File Modern & Premium**
-
-JavloadServer adalah solusi berbagi file profesional yang hadir dalam dua versi: **Aplikasi Terminal (CLI)** berbasis Spring Boot dan **Aplikasi Android Native**. Keduanya menawarkan keamanan tingkat tinggi, UI yang memukau, dan pengalaman pengguna yang mulus.
-
-[Fitur](#-fitur) • [Instalasi Android](#-instalasi-aplikasi-android) • [Instalasi Terminal](#-instalasi-aplikasi-terminal) • [Penggunaan](#-cara-penggunaan) • [Tema](#-tema--kustomisasi)
+**🚀 Server Berbagi File Kelas Enterprise dengan Keamanan Tinggi**
 
 </div>
 
@@ -21,169 +14,68 @@ JavloadServer adalah solusi berbagi file profesional yang hadir dalam dua versi:
 
 ## 🎯 Tentang Project
 
-JavloadServer menggabungkan kemudahan penggunaan dengan fitur kelas atas. Dirancang untuk performa maksimal, keamanan ketat, dan fleksibilitas untuk penggunaan pribadi maupun profesional.
+**FluxLoad** (versi Java) adalah aplikasi berbagi file profesional yang dirancang khusus untuk lingkungan yang membutuhkan kestabilan dan keamanan tinggi. Dibangun menggunakan teknologi **Spring Boot**, aplikasi ini sangat tangguh untuk menangani transfer file berukuran besar.
 
-**Cocok digunakan untuk:**
-- 🏢 **Lingkungan Kantor** yang butuh berbagi file dengan aman.
-- 🛠️ **Developer** yang ingin berbagi aset build atau resource antar sistem.
-- 📱 **Pengguna Mobile** yang ingin mengakses file HP dari laptop atau sebaliknya.
-- 🔐 **Transfer Aman** yang membutuhkan proteksi password.
+> **⚠️ PERHATIAN (MULTIPLE BRANCHES):**
+> Repository ini memiliki 2 versi bahasa pemrograman. Saat ini Anda sedang berada di **Branch Java**. Jika Anda ingin melihat versi Python, jalankan `git checkout python`.
 
 ---
 
-## ✨ Fitur Utama
+## ✨ Fitur Unggulan
 
-### 📱 **Eksklusif Android**
-- **Foreground Service**: Server tetap jalan meskipun aplikasi di-minimize.
-- **Native UI**: Dibuat dengan Jetpack Compose untuk performa mulus.
-- **QR Code Sharing**: Bagikan link akses server secara instan lewat scan QR.
-- **Status Dashboard**: Pantau IP Address dan status server secara real-time.
-
-### 🖥️ **Eksklusif Terminal**
-- **Enterprise Ready**: Dibangun dengan Spring Boot 3.2.0.
-- **CLI Power**: Kontrol penuh melalui argumen command line.
-- **Monitoring**: Mendukung Actuator endpoints untuk memantau kesehatan server.
-
-### 🎨 **Pengalaman Pengguna (Terminal & Android)**
-- **Modern Dark UI**: Tampilan Portal Web yang elegan dengan efek glassmorphism.
-- **15+ Tema Premium**: Ganti tema sesukamu (Tokyo Night, Rose Pine, Catppuccin, dll).
-- **Drag & Drop Upload**: Upload file dengan animasi progress bar yang keren.
-- **Navigasi Folder**: Telusuri folder dengan mudah melalui browser.
-- **Proteksi Password**: Keamanan ekstra untuk mengakses file kamu.
+- 🖥️ **Performa Enterprise:** Dirancang dengan Java 17 dan Spring Boot 3.2.0.
+- 🎨 **UI Modern & Tema Premium:** Tampilan elegan bergaya *glassmorphism* dengan 15+ pilihan tema (Tokyo Night, Dracula, dll).
+- 🚀 **Cepat & Stabil:** Tidak mudah *crash* saat menangani banyak antrean *upload/download*.
+- 🔐 **Keamanan Lapis Baja:** Dilindungi dengan *Spring Security* untuk autentikasi yang solid.
+- 📱 **Integrasi QR Code:** Scan kode QR di layar untuk langsung mengakses server dari HP.
 
 ---
 
-## 🛠️ Teknologi & Bahasa Pemrograman
+## 🛠️ Cara Instalasi
 
-Project ini menggunakan teknologi modern untuk memastikan performa yang cepat dan tampilan yang premium di berbagai platform.
+Pastikan komputer kamu sudah terinstall **Java 17 (atau lebih baru)** dan **Maven**.
 
-### **📱 Aplikasi Android**
-- **Bahasa Utama**: [Kotlin](https://kotlinlang.org/) (Bahasa modern yang direkomendasikan Google untuk Android).
-- **UI Framework**: **Jetpack Compose** (Untuk membangun UI yang deklaratif, reaktif, dan animasi yang mulus).
-- **Network Stack**: **NanoHTTPD** (Server HTTP ringan yang efisien dijalankan sebagai service).
-- **Architecture**: **MVVM (Model-View-ViewModel)** (Memastikan kode terstruktur dan mudah dikelola).
-- **QR Engine**: **ZXing** (Untuk pembuatan QR Code akses instan).
+1. **Clone Repository:**
+   ```bash
+   git clone https://github.com/MuadzHdz/FluxLoad.git
+   cd FluxLoad
+   git checkout java
+   ```
 
-### **🖥️ Aplikasi Terminal (CLI)**
-- **Bahasa Utama**: **Java 17+** (Bahasa enterprise yang kuat dan stabil).
-- **Framework**: **Spring Boot 3.2.0** (Framework Java terbaik untuk membangun aplikasi server).
-- **View Engine**: **Thymeleaf** (Untuk rendering Portal Web di sisi server).
-- **Build Tool**: **Maven** (Untuk manajemen dependensi dan otomasi build).
-- **Security**: **Spring Security** (Proteksi tingkat tinggi untuk autentikasi dan otorisasi).
-
----
-
-## 📱 Instalasi Aplikasi Android
-
-Aplikasi Android memungkinkan kamu menjadikan HP kamu sebagai server file yang bisa diakses oleh perangkat lain di jaringan yang sama.
-
-### Langkah-langkah Instalasi:
-
-1.  **Clone Project**:
-    ```bash
-    git clone https://github.com/MuadzHdz/javloadserver.git
-    cd javloadserver/android-app
-    ```
-2.  **Build Aplikasi**:
-    - Buka folder `android-app` menggunakan **Android Studio**.
-    - Atau gunakan baris perintah (Terminal):
-      ```bash
-      ./gradlew assembleDebug
-      ```
-3.  **Install APK**:
-    - File APK akan tersedia di `android-app/app/build/outputs/apk/debug/app-debug.apk`.
-    - Pindahkan APK ke HP dan install seperti biasa.
-4.  **Izin Penyimpanan**:
-    - Saat pertama kali dijalankan, aplikasi akan meminta izin akses file. Pastikan kamu memberikan izin agar aplikasi bisa membaca dan menulis file.
-
-### Cara Penggunaan:
-1.  Buka aplikasi **JavLoadServer**.
-2.  Klik ikon **Settings** untuk mengatur:
-    - **Port**: Default 8080.
-    - **Directory**: Pilih folder yang ingin kamu bagikan.
-    - **Password**: (Opsional) Aktifkan untuk keamanan ekstra.
-3.  Klik **START SERVER SESSION**.
-4.  Gunakan IP Address yang muncul (atau scan QR Code) untuk mengakses dari browser di laptop/perangkat lain.
+2. **Build Project:**
+   ```bash
+   mvn clean package -DskipTests
+   ```
+   *Perintah ini akan membuat file executable `.jar` di dalam folder `target/`.*
 
 ---
 
-## 🖥️ Instalasi Aplikasi Terminal
+## 🚀 Cara Penggunaan
 
-Versi ini cocok dijalankan di PC/Laptop (Windows, Linux, macOS).
+Menjalankan FluxLoad versi Java sangat gampang. Kamu bisa langsung mengeksekusi file `.jar` yang sudah di-build tadi.
 
-### Prasyarat:
-- **Java 17+** (OpenJDK atau Oracle Java)
-- **Maven 3.6+** (Opsional, untuk build dari source)
-
-### Cara Menjalankan:
-
-#### Opsi 1: Build & Run (Rekomendasi)
+### Mode Sederhana:
 ```bash
-# Masuk ke folder root project
-mvn clean package -DskipTests
-
-# Jalankan server
-java -jar target/javloadserver-1.1.0.jar
+java -jar target/fluxload-1.1.0.jar
 ```
 
-#### Opsi 2: Kustomisasi Pengaturan
+### Mode Kustom (Port & Password):
+Jika kamu ingin mengganti port, menambahkan password, dan menentukan folder tujuan:
 ```bash
-# Jalankan dengan password dan port kustom
-java -jar javloadserver.jar --password rahasia --port 9000 -d /folder/tujuan
+java -jar target/fluxload-1.1.0.jar --port 9000 --password rahasia123 --directory /folder/tujuan
 ```
 
-### Opsi Command Line:
-| Opsi | Deskripsi | Default |
-|--------|-------------|---------|
-| `--directory` / `-d` | Folder yang akan dibagikan | Direktori saat ini |
-| `--port` / `-p` | Port server | `8000` |
-| `--password` | Pasang password akses | Tanpa password |
-| `--open` / `-o` | Otomatis buka browser | `false` |
+| Opsi | Penjelasan |
+|---|---|
+| `--port` atau `-p` | Menentukan port server (Default: 8000) |
+| `--password` | Mengunci akses web dengan password |
+| `--directory` atau `-d` | Folder tempat file akan disimpan/dibagikan |
+| `--open` atau `-o` | Otomatis membuka browser saat server menyala |
 
 ---
 
-## 🎨 Tema & Kustomisasi
-
-JavloadServer dilengkapi dengan **15+ tema profesional**. Kamu bisa menggantinya secara instan melalui *Theme Carousel* di bagian bawah halaman web:
-
-- 🌃 **Tokyo Night** - Biru gelap profesional
-- 🌹 **Rose Pine** - Gradasi ungu elegan
-- 🐱 **Catppuccin series** - Mocha, Macchiato, Frappe, Latte
-- 🧛 **Dracula** - Tema gelap klasik
-- ❄️ **Nord** - Minimalis ala Nordik
-- ...dan masih banyak lagi!
-
----
-
-## 🤝 Kontribusi
-
-Kami sangat terbuka untuk kontribusi!
-1. Fork repository ini.
-2. Buat branch baru: `git checkout -b fitur-keren`.
-3. Commit perubahan kamu: `git commit -m 'Tambah fitur keren'`.
-4. Push ke branch: `git push origin fitur-keren`.
-5. Buat Pull Request.
-
----
+## 🤝 Berkontribusi
+Kami sangat terbuka untuk kontribusi! Silakan Fork, buat branch baru, dan kirimkan Pull Request.
 
 ## 📄 Lisensi
-
-Project ini dilisensikan di bawah **MIT License**. Lihat file [LICENSE](LICENSE) untuk detail lebih lanjut.
-
----
-
-## 👨‍💻 Author
-
-**Mu'adz**  
-[![GitHub](https://img.shields.io/badge/GitHub-MuadzHdz-blue?style=flat&logo=github)](https://github.com/MuadzHdz)  
-[![Email](https://img.shields.io/badge/Email-adzhdz73@gmail.com-red?style=flat&logo=gmail)](mailto:adzhdz73@gmail.com)
-
----
-
-<div align="center">
-
-**⭐ Beri bintang jika project ini bermanfaat buat kamu!**
-
-Dibuat dengan ❤️ dan ☕ oleh Mu'adz.
-
-</div>
+Project ini berada di bawah lisensi MIT. Lihat file `LICENSE` untuk informasi selengkapnya.

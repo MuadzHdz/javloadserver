@@ -1,7 +1,7 @@
-package com.javloadserver.config;
+package com.fluxload.config;
 
-import com.javloadserver.ServerConfig;
-import com.javloadserver.UploadServerApplication;
+import com.fluxload.ServerConfig;
+import com.fluxload.FluxLoadApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +22,7 @@ public class SecurityConfig {
     private final ServerConfig serverConfig;
 
     public SecurityConfig() {
-        this.serverConfig = UploadServerApplication.getServerConfig();
+        this.serverConfig = FluxLoadApplication.getServerConfig();
     }
 
     @Bean

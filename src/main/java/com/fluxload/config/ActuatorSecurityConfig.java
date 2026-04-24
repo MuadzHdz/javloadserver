@@ -1,4 +1,4 @@
-package com.javloadserver.config;
+package com.fluxload.config;
 
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;

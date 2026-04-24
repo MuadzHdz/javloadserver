@@ -1,4 +1,4 @@
-package com.javloadserver;
+package com.fluxload;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 
 @SpringBootApplication
-public class UploadServerApplication {
+public class FluxLoadApplication {
 
     private static ServerConfig serverConfig;
 
@@ -20,7 +20,7 @@ public class UploadServerApplication {
         System.setProperty("server.port", String.valueOf(serverConfig.getPort()));
         System.setProperty("server.address", serverConfig.getBind());
         
-        SpringApplication app = new SpringApplication(UploadServerApplication.class);
+        SpringApplication app = new SpringApplication(FluxLoadApplication.class);
         app.setAdditionalProfiles("default");
         app.run(args);
     }
@@ -37,7 +37,7 @@ public class UploadServerApplication {
     private void displayServerInfo() {
         String url = "http://" + serverConfig.getHost() + ":" + serverConfig.getPort();
         System.out.println("\n" + "=".repeat(50));
-        System.out.println("JavloadServer Started Successfully!");
+        System.out.println("FluxLoad Started Successfully!");
         System.out.println("Server URL: " + url);
         System.out.println("Serving Directory: " + serverConfig.getDirectory());
         System.out.println("Password Protection: " + (serverConfig.hasPassword() ? "Enabled" : "Disabled"));

@@ -1,4 +1,4 @@
-package com.javloadserver;
+package com.fluxload;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -63,7 +63,7 @@ public class ServerConfig {
                     openBrowser = true;
                     break;
                 case "--version":
-                    System.out.println("javloadserver 1.1.0");
+                    System.out.println("fluxload 1.1.0");
                     System.exit(0);
                     break;
                 case "-h":
@@ -119,9 +119,9 @@ public class ServerConfig {
     }
 
     private void displayHelp() {
-        System.out.println("JavloadServer - A simple, modern file server with upload, password protection, and QR code access");
+        System.out.println("FluxLoad - A simple, modern file server with upload, password protection, and QR code access");
         System.out.println();
-        System.out.println("Usage: java -jar javloadserver-1.1.0.jar [OPTIONS]");
+        System.out.println("Usage: java -jar fluxload-1.1.0.jar [OPTIONS]");
         System.out.println();
         System.out.println("Options:");
         System.out.println("  -d, --directory DIR    The directory to serve files from and save uploads to");

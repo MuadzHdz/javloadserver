@@ -1,4 +1,4 @@
-package com.javloadserver;
+package com.fluxload;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

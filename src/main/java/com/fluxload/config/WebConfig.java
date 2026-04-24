@@ -1,4 +1,4 @@
-package com.javloadserver.config;
+package com.fluxload.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

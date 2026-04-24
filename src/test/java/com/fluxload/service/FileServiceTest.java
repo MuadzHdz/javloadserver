@@ -1,4 +1,4 @@
-package com.javloadserver.service;
+package com.fluxload.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

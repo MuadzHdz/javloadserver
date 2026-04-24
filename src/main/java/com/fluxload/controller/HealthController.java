@@ -1,4 +1,4 @@
-package com.javloadserver.controller;
+package com.fluxload.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +12,7 @@ public class HealthController {
     public Map<String, Object> health() {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "UP");
-        response.put("application", "JavloadServer");
+        response.put("application", "FluxLoad");
         response.put("version", "1.1.0");
         response.put("timestamp", System.currentTimeMillis());
         return response;
@@ -21,7 +21,7 @@ public class HealthController {
     @GetMapping("/api")
     public Map<String, Object> apiInfo() {
         Map<String, Object> response = new HashMap<>();
-        response.put("application", "JavloadServer");
+        response.put("application", "FluxLoad");
         response.put("version", "1.1.0");
         response.put("description", "A modern file sharing server with upload capabilities");
         response.put("endpoints", Map.of(

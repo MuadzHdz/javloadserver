@@ -12,10 +12,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.javloadserver</groupId>
-    <artifactId>javloadserver</artifactId>
+    <groupId>com.fluxload</groupId>
+    <artifactId>fluxload</artifactId>
     <version>1.1.0</version>
-    <name>javloadserver</name>
+    <name>fluxload</name>
     <description>A simple, modern file server with upload, password protection, and QR code access</description>
 
     <properties>
@@ -104,7 +104,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.javloadserver.UploadServerApplication</mainClass>
+                    <mainClass>com.fluxload.FluxLoadApplication</mainClass>
                 </configuration>
             </plugin>
             

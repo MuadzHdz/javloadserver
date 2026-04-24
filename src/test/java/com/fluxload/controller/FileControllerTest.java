@@ -1,6 +1,6 @@
-package com.javloadserver.controller;
+package com.fluxload.controller;
 
-import com.javloadserver.service.FileService;
+import com.fluxload.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
