@@ -71,7 +71,7 @@ python -m fluxload.advanced_main --dev-mode -d /path/to/share
 
 | Flag | Description |
 |------|-------------|
-| `--dev-mode` | Enable development mode with auto-reload |
+| `--dev-mode` | Enable debug mode with detailed error pages |
 | `--workers` | Number of worker processes (default: 1) |
 | `--max-upload-size` | Max upload size per file (default: 100MB) |
 | `--storage-quota` | Default storage quota per user (default: 5GB) |

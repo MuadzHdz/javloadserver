@@ -433,7 +433,10 @@ def main():
         print(f"\n🛑 Shutting down gracefully...")
         if file_monitor:
             file_monitor.stop()
-        db.session.remove()
+        try:
+            db.session.remove()
+        except Exception:
+            pass
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
@@ -456,15 +459,12 @@ def main():
                 host=args.bind,
                 port=args.port,
                 debug=True,
+                use_reloader=False,
                 threaded=True,
             )
         else:
-            # Production server
             if args.workers > 1:
                 print("⚠️  Multi-worker mode requires gunicorn; falling back to threaded mode.")
-                print(
-                    f"   For production: gunicorn -w {args.workers} -b {args.bind}:{args.port} fluxload.advanced_server:app"
-                )
 
             app.run(host=args.bind, port=args.port, debug=args.debug, threaded=True)
 
