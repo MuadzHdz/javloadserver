@@ -64,6 +64,11 @@ def create_app():
     app.config["UPLOAD_FOLDER"] = UPLOAD_DIRECTORY
     app.secret_key = os.urandom(24)
 
+    # Context processor for template variables
+    @app.context_processor
+    def inject_globals():
+        return {"site_name": "FluxLoad", "admin_email": ""}
+
     # Custom template filters
     @app.template_filter("dirname")
     def dirname_filter(path):

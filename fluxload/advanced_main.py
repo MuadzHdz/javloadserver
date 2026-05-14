@@ -227,8 +227,7 @@ def main():
 
     parser.add_argument(
         "--redis-url",
-        default="redis://localhost:6379/0",
-        help="Redis connection URL for session storage.\n[default: redis://localhost:6379/0]",
+        help="Redis connection URL for session storage.\nIf not provided, uses Flask's default cookie sessions.",
     )
 
     parser.add_argument(
