@@ -452,12 +452,10 @@ def main():
 
     try:
         if args.dev_mode:
-            # Development server with auto-reload
             app.run(
                 host=args.bind,
                 port=args.port,
-                debug=args.debug if args.debug else True,
-                use_reloader=True,
+                debug=True,
                 threaded=True,
             )
         else:
