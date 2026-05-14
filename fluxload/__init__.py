@@ -1,6 +1,6 @@
 """FluxLoad: A simple, modern file server."""
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 # Export create_app from advanced_server as default
 from .advanced_server import create_app
