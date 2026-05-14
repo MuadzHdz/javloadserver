@@ -1,6 +1,4 @@
-<div align="center">
 # FluxLoad (Python Version)
-</div>
 
 <div align="center">
 
