@@ -205,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateColorPaletteDisplay();
 
     // Upload progress handling
-    const uploadForm = document.getElementById('upload-form');
     const progressContainer = document.querySelector('.progress-container');
     const progressBar = document.querySelector('.progress-fill');
     const progressText = document.querySelector('.progress-text');

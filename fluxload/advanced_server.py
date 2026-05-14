@@ -282,69 +282,40 @@ def create_app(directory=None, database_url=None):
     @app.route("/")
     @app.route("/dashboard")
     def dashboard():
-        """Main dashboard - if no password set, allow access without login"""
-        # Check if password is required
+        """Main dashboard - redirects unauthenticated users to file browser"""
         if PASSWORD and not current_user.is_authenticated:
             return redirect(url_for("login"))
 
-        # Get user info - use guest if not authenticated
-        user = current_user if current_user.is_authenticated else None
+        if not current_user.is_authenticated:
+            return redirect(url_for("browse"))
 
-        # Create a simple object for guest user
-        if not user:
-            from werkzeug.security import generate_password_hash
-
-            user = type(
-                "GuestUser",
-                (),
-                {
-                    "id": "guest",
-                    "username": "Guest",
-                    "email": "guest@localhost",
-                    "full_name": "Guest User",
-                    "role": "user",
-                    "storage_quota": 5 * 1024 * 1024 * 1024,  # 5GB default
-                    "storage_used": 0,
-                    "is_authenticated": False,
-                },
-            )()
-
-        # Get user statistics if logged in
-        if user:
-            total_files = File.query.filter_by(owner_id=user.id).count()
-            total_size = (
-                db.session.query(db.func.sum(File.file_size))
-                .filter_by(owner_id=user.id)
-                .scalar()
-                or 0
-            )
-            recent_files = (
-                File.query.filter_by(owner_id=user.id)
-                .order_by(desc(File.created_at))
-                .limit(5)
-                .all()
-            )
-            recent_activities = (
-                Activity.query.filter_by(user_id=user.id)
-                .order_by(desc(Activity.created_at))
-                .limit(10)
-                .all()
-            )
-            storage_percent = (
-                (total_size / user.storage_quota * 100) if user.storage_quota > 0 else 0
-            )
-        else:
-            # Guest user - no stats
-            total_files = 0
-            total_size = 0
-            recent_files = []
-            recent_activities = []
-            storage_percent = 0
+        total_files = File.query.filter_by(owner_id=current_user.id).count()
+        total_size = (
+            db.session.query(db.func.sum(File.file_size))
+            .filter_by(owner_id=current_user.id)
+            .scalar()
+            or 0
+        )
+        recent_files = (
+            File.query.filter_by(owner_id=current_user.id)
+            .order_by(desc(File.created_at))
+            .limit(5)
+            .all()
+        )
+        recent_activities = (
+            Activity.query.filter_by(user_id=current_user.id)
+            .order_by(desc(Activity.created_at))
+            .limit(10)
+            .all()
+        )
+        storage_percent = (
+            (total_size / current_user.storage_quota * 100) if current_user.storage_quota > 0 else 0
+        )
 
         theme = request.cookies.get("theme", "tokyo-night")
         return render_template(
             "dashboard.html",
-            user=user,
+            user=current_user,
             total_files=total_files,
             total_size=total_size,
             storage_percent=storage_percent,
@@ -521,7 +492,7 @@ def create_app(directory=None, database_url=None):
             return redirect(url_for("browse", path=path))
 
     @app.route("/download/<path:filename>")
-    def download_file(filename):
+    def download(filename):
         """Download file with access tracking"""
         if PASSWORD and not current_user.is_authenticated:
             return redirect(url_for("login"))
@@ -629,6 +600,36 @@ def create_app(directory=None, database_url=None):
             is_image=is_image,
             theme=theme,
         )
+
+    @app.route("/mkdir/", methods=["POST"])
+    @app.route("/mkdir/<path:path>", methods=["POST"])
+    @login_required
+    def create_directory(path=""):
+        dir_name = request.form.get("dir_name", "").strip()
+        if not dir_name:
+            flash("Directory name cannot be empty.", "error")
+            return redirect(url_for("browse", path=path))
+
+        from werkzeug.utils import secure_filename
+        dir_name = secure_filename(dir_name)
+        if not dir_name:
+            flash("Invalid directory name.", "error")
+            return redirect(url_for("browse", path=path))
+
+        new_dir_path = os.path.join(app.config["UPLOAD_FOLDER"], path, dir_name)
+        if not os.path.abspath(new_dir_path).startswith(os.path.abspath(app.config["UPLOAD_FOLDER"])):
+            flash("Invalid path.", "error")
+            return redirect(url_for("browse", path=path))
+
+        try:
+            os.makedirs(new_dir_path, exist_ok=False)
+            flash(f'Directory "{dir_name}" created successfully!', "success")
+        except FileExistsError:
+            flash(f'Directory "{dir_name}" already exists.', "error")
+        except Exception as e:
+            flash(f"Error creating directory: {e}", "error")
+
+        return redirect(url_for("browse", path=path))
 
     # ===== ADMIN ROUTES =====
 

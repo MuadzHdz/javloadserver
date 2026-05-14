@@ -31,15 +31,23 @@ pip install -r requirements.txt
 ### Basic Mode (Simple file sharing)
 
 ```bash
-fluxload -d /path/to/share
-# or: python -m fluxload -d /path/to/share
+python -m fluxload -d /path/to/share
 ```
 
 ### Advanced Mode (Multi-user, admin, search, etc.)
 
+The `fluxload` command runs the advanced server by default:
+
 ```bash
-fluxload --dev-mode -d /path/to/share
-# or: python -m fluxload.advanced_main --dev-mode -d /path/to/share
+fluxload -d /path/to/share          # production mode
+fluxload --dev-mode -d /path/to/share  # development mode
+```
+
+Or run directly without installing:
+
+```bash
+python -m fluxload.advanced_main -d /path/to/share
+python -m fluxload.advanced_main --dev-mode -d /path/to/share
 ```
 
 ---
