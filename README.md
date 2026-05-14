@@ -1,3 +1,4 @@
+<div align="center">
 # FluxLoad (Python Version)
 
 <div align="center">
@@ -6,13 +7,13 @@
 ![Flask](https://img.shields.io/badge/Flask-2.3+-lightgrey.svg?style=for-the-badge&logo=flask)
 ![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
 
-**🚀 Server Berbagi File Modern, Cepat, dan Aman**
+**Server Berbagi File Modern, Cepat, dan Aman**
 
 </div>
 
 ---
 
-## 🎯 Tentang Project
+## Tentang Project
 
 **FluxLoad** adalah aplikasi file server modern berbasis Python (Flask) yang memungkinkan kamu untuk membagikan, menerima, dan mengelola file dalam jaringan lokal (LAN) atau server public dengan sangat mudah.
 
@@ -23,17 +24,17 @@ FluxLoad memiliki antarmuka (UI) web yang sangat cantik dan responsif, fitur dra
 
 ---
 
-## ✨ Fitur Unggulan
+## Fitur Unggulan
 
-- 📂 **Drag & Drop Upload:** Upload banyak file sekaligus dengan mudah.
-- 🎨 **Tema Dinamis:** Tersedia berbagai tema premium (Dark Mode, Catppuccin, Nord, dll).
-- 🔍 **Pencarian Cepat:** Dilengkapi *search engine* internal untuk mencari file dengan instan.
-- 🔐 **Keamanan Tangguh:** Mulai dari proteksi password sederhana hingga manajemen User/Admin.
-- 📱 **Mobile Friendly:** Tampilan responsif + Auto-Generate QR Code agar mudah diakses lewat HP.
+- **Drag & Drop Upload:** Upload banyak file sekaligus dengan mudah.
+- **Tema Dinamis:** Tersedia berbagai tema premium (Dark Mode, Catppuccin, Nord, dll).
+- **Pencarian Cepat:** Dilengkapi *search engine* internal untuk mencari file dengan instan.
+- **Keamanan Tangguh:** Mulai dari proteksi password sederhana hingga manajemen User/Admin.
+- **Mobile Friendly:** Tampilan responsif + Auto-Generate QR Code agar mudah diakses lewat HP.
 
 ---
 
-## 🛠️ Cara Instalasi
+## Cara Instalasi
 
 FluxLoad versi Python sangat mudah diinstal. Pastikan komputer kamu sudah terinstall **Python 3.8** atau lebih baru.
 
@@ -58,7 +59,7 @@ FluxLoad versi Python sangat mudah diinstal. Pastikan komputer kamu sudah terins
 
 ---
 
-## 🚀 Cara Penggunaan
+## Cara Penggunaan
 
 FluxLoad menawarkan dua mode pengoperasian sesuai kebutuhanmu:
 
@@ -84,14 +85,11 @@ python -m fluxload --dev-mode -d /path/ke/folder/kamu
 
 ---
 
-## 🌐 Mengakses Server
+## Mengakses Server
 Setelah server berjalan, kamu akan melihat IP Address di terminal (misal: `http://192.168.1.5:8000`).
 Buka IP tersebut di browser laptop atau HP mana pun yang terhubung ke jaringan yang sama.
 
 ---
-
-## 🤝 Berkontribusi
-Kami sangat terbuka untuk segala jenis kontribusi (Pull Request, Laporan Bug, atau Saran Fitur). Silakan *fork* repo ini dan berkreasi!
 
 ## 📄 Lisensi
 Project ini berada di bawah lisensi MIT. Lihat file `LICENSE` untuk detailnya.
