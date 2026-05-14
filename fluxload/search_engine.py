@@ -3,18 +3,11 @@ Advanced search engine for FluxLoad Pro
 """
 
 import os
-import hashlib
-import mimetypes
-from datetime import datetime
 from whoosh import fields, index
-from whoosh.analysis import StandardAnalyzer, StemmingAnalyzer
+from whoosh.analysis import StemmingAnalyzer
 from whoosh.filedb.filestore import FileStorage
-from whoosh.qparser import QueryParser, MultifieldParser
-from whoosh.query import And, Or, Term, Prefix, Wildcard
-import magic
-import json
-
-from .models import File, User
+from whoosh.qparser import MultifieldParser
+from whoosh.query import And, Or, Term, Prefix, Every, NumericRange, DateRange
 
 
 class SearchEngine:
@@ -280,7 +273,7 @@ class SearchEngine:
                     query = And(
                         [
                             query,
-                            fields.RangeFilter("file_size", filters["size_min"], None),
+                            NumericRange("file_size", filters["size_min"], None),
                         ]
                     )
 
@@ -288,7 +281,7 @@ class SearchEngine:
                     query = And(
                         [
                             query,
-                            fields.RangeFilter("file_size", None, filters["size_max"]),
+                            NumericRange("file_size", None, filters["size_max"]),
                         ]
                     )
 
@@ -296,9 +289,7 @@ class SearchEngine:
                     query = And(
                         [
                             query,
-                            fields.DateRangeFilter(
-                                "created_at", filters["date_from"], None
-                            ),
+                            DateRange("created_at", filters["date_from"], None),
                         ]
                     )
 
@@ -306,9 +297,7 @@ class SearchEngine:
                     query = And(
                         [
                             query,
-                            fields.DateRangeFilter(
-                                "created_at", None, filters["date_to"]
-                            ),
+                            DateRange("created_at", None, filters["date_to"]),
                         ]
                     )
 

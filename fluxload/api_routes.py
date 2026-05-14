@@ -297,6 +297,9 @@ def register_api_routes(app):
     @api_required
     def api_create_share():
         """Create file share"""
+        if not app.config.get("ENABLE_FILE_SHARING", True):
+            return jsonify({"error": "File sharing is disabled"}), 403
+
         data = request.get_json()
         file_id = data.get("file_id")
         share_type = data.get("type", "link")

@@ -206,8 +206,13 @@
     <div class="admin-container">
         <header class="admin-header">
             <div>
-                <h1 class="admin-title">Admin Dashboard</h1>
-                <p style="color: var(--subtle); margin: 0.5rem 0 0 0;">System Overview & Management</p>
+                <h1 class="admin-title">{{ site_name }} — Admin</h1>
+                <p style="color: var(--subtle); margin: 0.5rem 0 0 0;">
+                    System Overview & Management
+                    {% if admin_email %}
+                        · <a href="mailto:{{ admin_email }}" style="color: var(--primary);">{{ admin_email }}</a>
+                    {% endif %}
+                </p>
             </div>
             <div class="admin-actions">
                 <a href="{{ url_for('dashboard') }}" class="btn" style="background: var(--surface); color: var(--fg);">

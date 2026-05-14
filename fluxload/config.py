@@ -28,7 +28,7 @@ class Config:
         "mp4",
         "zip",
         "rar",
-        "6z",
+        "7z",
         "tar",
         "gz",
     }

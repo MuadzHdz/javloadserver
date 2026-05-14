@@ -5,11 +5,9 @@ import socket
 import threading
 import webbrowser
 import mimetypes
-import json
 import hmac
 from functools import wraps
 from getpass import getpass
-from pathlib import Path
 
 from fluxload import __version__
 
@@ -95,6 +93,11 @@ def create_app():
         theme = request.cookies.get("theme", "tokyo-night")
         return render_template("login.html", theme=theme)
 
+    @app.route("/register", methods=["GET"])
+    def register():
+        flash("Registration is only available in Advanced Mode.", "info")
+        return redirect(url_for("login"))
+
     @app.route("/logout")
     def logout():
         session.pop("logged_in", None)
@@ -114,10 +117,10 @@ def create_app():
     @app.route("/browse/<path:path>")
     @login_required
     def browse(path=""):
-        current_dir = os.path.join(UPLOAD_DIRECTORY, path)
+        current_dir = os.path.abspath(os.path.join(UPLOAD_DIRECTORY, path))
 
         if not os.path.isdir(current_dir) or not current_dir.startswith(
-            UPLOAD_DIRECTORY
+            os.path.abspath(UPLOAD_DIRECTORY)
         ):
             flash("Error: Invalid or inaccessible directory.", "error")
             return redirect(url_for("browse"))

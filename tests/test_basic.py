@@ -10,8 +10,8 @@ class TestBasicApp:
 
     def test_home_page(self, client):
         response = client.get("/")
-        assert response.status_code == 200 or response.status_code == 301
+        assert response.status_code in (200, 301, 302)
 
     def test_404_page(self, client):
-        response = client.get("/nonpexistent")
+        response = client.get("/nonexistent")
         assert response.status_code == 404

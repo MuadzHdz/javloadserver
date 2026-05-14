@@ -1,94 +1,83 @@
-# FluxLoad (Python Version)
-
 <div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python)
-![Flask](https://img.shields.io/badge/Flask-2.3+-lightgrey.svg?style=for-the-badge&logo=flask)
-![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
+# fluxload (Python Version)
 
-**Server Berbagi File Modern, Cepat, dan Aman**
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python)
+![Flask](https://img.shields.io/badge/Flask-3.0+-lightgrey.svg?style=for-the-badge&logo=flask)
+![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
 
 </div>
 
----
-
-## Tentang Project
-
-**FluxLoad** adalah aplikasi file server modern berbasis Python (Flask) yang memungkinkan kamu untuk membagikan, menerima, dan mengelola file dalam jaringan lokal (LAN) atau server public dengan sangat mudah.
-
-FluxLoad memiliki antarmuka (UI) web yang sangat cantik dan responsif, fitur drag-and-drop, serta dukungan penuh untuk pencarian file dan manajemen pengguna.
-
-> **⚠️ PERHATIAN (MULTIPLE BRANCHES):**
-> Repository ini memiliki 2 versi bahasa pemrograman. Saat ini Anda sedang berada di **Branch Python**. Jika Anda ingin melihat versi Java/Spring Boot, jalankan `git checkout java`.
+A modern file sharing server with two modes: a simple single-user server and an advanced multi-user enterprise server.
 
 ---
 
-## Fitur Unggulan
-
-- **Drag & Drop Upload:** Upload banyak file sekaligus dengan mudah.
-- **Tema Dinamis:** Tersedia berbagai tema premium (Dark Mode, Catppuccin, Nord, dll).
-- **Pencarian Cepat:** Dilengkapi *search engine* internal untuk mencari file dengan instan.
-- **Keamanan Tangguh:** Mulai dari proteksi password sederhana hingga manajemen User/Admin.
-- **Mobile Friendly:** Tampilan responsif + Auto-Generate QR Code agar mudah diakses lewat HP.
-
----
-
-## Cara Instalasi
-
-FluxLoad versi Python sangat mudah diinstal. Pastikan komputer kamu sudah terinstall **Python 3.8** atau lebih baru.
-
-1. **Clone Repository:**
-   ```bash
-   git clone https://github.com/MuadzHdz/FluxLoad.git
-   cd FluxLoad
-   git checkout python
-   ```
-
-2. **Buat Virtual Environment (Sangat Disarankan):**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Untuk Linux/Mac
-   # venv\Scripts\activate   # Untuk Windows
-   ```
-
-3. **Install Dependensi:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## Cara Penggunaan
-
-FluxLoad menawarkan dua mode pengoperasian sesuai kebutuhanmu:
-
-### Mode 1: Basic Mode (Sederhana & Cepat)
-Cocok jika kamu hanya ingin berbagi folder dengan teman di jaringan WiFi yang sama secara instan.
+## Quick Start
 
 ```bash
-# Menjalankan server di port 8000 dan membagikan folder saat ini
-python -m fluxload -p 8000 -d /path/ke/folder/kamu
+git clone https://github.com/MuadzHdz/fluxload.git
+cd fluxload
+pip install -r requirements.txt
 ```
 
-Jika ingin **dikunci dengan password**:
+### Basic Mode (Simple file sharing)
+
 ```bash
-python -m fluxload -p 8000 --password rahasia123
+python -m fluxload -d /path/to/share
 ```
 
-### Mode 2: Advanced Mode (Fitur Enterprise & Login)
-Cocok jika kamu ingin membuat server file permanen dengan fitur manajemen akun (login/register).
+### Advanced Mode (Multi-user, admin, search, etc.)
 
+Run directly (no install needed):
 ```bash
-python -m fluxload --dev-mode -d /path/ke/folder/kamu
+python -m fluxload.advanced_main --dev-mode -d /path/to/share
+```
+
+Or install the package to use the `fluxload` command:
+```bash
+pip install -e .
+fluxload --dev-mode -d /path/to/share
 ```
 
 ---
 
-## Mengakses Server
-Setelah server berjalan, kamu akan melihat IP Address di terminal (misal: `http://192.168.1.5:8000`).
-Buka IP tersebut di browser laptop atau HP mana pun yang terhubung ke jaringan yang sama.
+> **Note:** `--redis-url` and `--elasticsearch-url` require optional packages:
+> ```bash
+> pip install Flask-Session redis elasticsearch
+> ```
+
+## CLI Options
+
+| Flag | Description |
+|------|-------------|
+| `-d` / `--directory` | Directory to serve (default: current dir) |
+| `-p` / `--port` | Port to listen on (default: 8000) |
+| `-b` / `--bind` | Bind address (default: 0.0.0.0) |
+| `--password` | Enable password protection |
+| `-o` / `--open` | Open browser automatically |
+
+### Advanced-Only Options
+
+| Flag | Description |
+|------|-------------|
+| `--dev-mode` | Enable development mode with auto-reload |
+| `--workers` | Number of worker processes (default: 1) |
+| `--max-upload-size` | Max upload size per file (default: 100MB) |
+| `--storage-quota` | Default storage quota per user (default: 5GB) |
+| `--disable-registration` | Disable user registration (default: enabled) |
+| `--disable-file-sharing` | Disable file sharing (default: enabled) |
+| `--database-url` | Database connection URL (default: SQLite) |
+| `--redis-url` | Redis session storage (requires `pip install Flask-Session redis`) |
+| `--elasticsearch-url` | Elasticsearch for search (requires `pip install elasticsearch`) |
+| `--admin-email` | Administrator email displayed in admin dashboard |
+| `--site-name` | Site name displayed in UI (default: FluxLoad Pro) |
 
 ---
 
-## Lisensi
-Project ini berada di bawah lisensi MIT. Lihat file `LICENSE` untuk detailnya.
+## Access
+
+Open `http://<your-ip>:8000` in any browser on the same network. A QR code is printed in the terminal for easy mobile access.
+
+## License
+
+MIT

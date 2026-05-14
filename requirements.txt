@@ -29,6 +29,13 @@ eventlet==0.33.3
 # Search
 Whoosh==2.7.4
 
+# Optional: Redis session storage (for --redis-url)
+# Flask-Session>=0.5
+# redis>=5.0
+
+# Optional: Elasticsearch search backend (for --elasticsearch-url)
+# elasticsearch>=8.9
+
 # Environment
 python-dotenv==1.0.0
 

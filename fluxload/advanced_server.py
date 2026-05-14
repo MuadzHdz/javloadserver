@@ -4,18 +4,13 @@ Advanced FluxLoad Pro with Enterprise Features
 
 import os
 import sys
-import argparse
 import socket
 import threading
 import webbrowser
 import mimetypes
-import json
 import hashlib
-import uuid
 from datetime import datetime, timezone
 from functools import wraps
-from getpass import getpass
-from pathlib import Path
 
 from flask import (
     Flask,
@@ -29,19 +24,16 @@ from flask import (
     jsonify,
     abort,
 )
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO
 from flask_login import (
     LoginManager,
-    UserMixin,
     login_user,
     logout_user,
     login_required,
     current_user,
 )
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import desc, asc, and_, or_
+from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
 
 from fluxload import __version__
@@ -78,6 +70,8 @@ SEARCH_ENGINE = SearchEngine()
 
 login_manager = LoginManager()
 
+socketio = SocketIO(cors_allowed_origins=os.getenv("CORS_ORIGINS", "localhost,127.0.0.1"))
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -96,7 +90,7 @@ def admin_required(f):
     return decorated_function
 
 
-def create_app():
+def create_app(directory=None, database_url=None):
     """Creates and configures the Flask application."""
     if not FLASK_AVAILABLE:
         print(
@@ -104,27 +98,38 @@ def create_app():
         )
         sys.exit(1)
 
+    global UPLOAD_DIRECTORY
+    if directory:
+        UPLOAD_DIRECTORY = directory
+
     app = Flask(__name__)
 
     # Configuration
     app.config["UPLOAD_FOLDER"] = UPLOAD_DIRECTORY
     app.config["SECRET_KEY"] = os.urandom(24)
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL", f"sqlite:///{os.path.join(UPLOAD_DIRECTORY, 'fluxload.db')}"
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        database_url
+        or os.getenv(
+            "DATABASE_URL",
+            f"sqlite:///{os.path.join(UPLOAD_DIRECTORY, 'fluxload.db')}",
+        )
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100MB max file size
 
     # Initialize extensions
-    socketio = SocketIO(
-        cors_allowed_origins=os.getenv("CORS_ORIGINS", "localhost,127.0.0.1")
-    )
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = "login"
     socketio.init_app(app, async_mode="threading")
 
-    # Register template filters
+    # Register template filters and context processors
+    @app.context_processor
+    def inject_settings():
+        return {
+            "site_name": app.config.get("site_name", "FluxLoad Pro"),
+            "admin_email": app.config.get("admin_email", ""),
+        }
     @app.template_filter("file_previewable")
     def file_previewable_filter(filename):
         from .utils import get_previewable_extensions
@@ -143,6 +148,10 @@ def create_app():
 
         # Initialize system settings
         init_system_settings()
+
+        # Load settings from DB into app.config for template access
+        for s in SystemSettings.query.all():
+            app.config[s.key] = s.value
 
         # Initialize search index
         SEARCH_ENGINE.index_directory(UPLOAD_DIRECTORY)
@@ -212,6 +221,10 @@ def create_app():
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
+        if not app.config.get("ENABLE_REGISTRATION", True):
+            flash("Registration is disabled.", "error")
+            return redirect(url_for("login"))
+
         if request.method == "POST":
             username = request.form.get("username", "").strip()
             email = request.form.get("email", "").strip()
@@ -510,8 +523,12 @@ def create_app():
     @app.route("/download/<path:filename>")
     def download_file(filename):
         """Download file with access tracking"""
+        if PASSWORD and not current_user.is_authenticated:
+            return redirect(url_for("login"))
+
+        user_id = current_user.id if current_user.is_authenticated else "guest"
         file_obj = File.query.filter_by(
-            owner_id=current_user.id, file_path=filename
+            owner_id=user_id, file_path=filename
         ).first()
 
         if not file_obj:
@@ -529,18 +546,18 @@ def create_app():
         db.session.commit()
 
         # Log activity
-        activity = Activity(
-            user_id=current_user.id,
-            file_id=file_obj.id,
-            action="download",
-            details={"filename": file_obj.filename},
-            ip_address=request.remote_addr,
-            user_agent=request.headers.get("User-Agent"),
-        )
-        db.session.add(activity)
-        db.session.commit()
+        if current_user.is_authenticated:
+            activity = Activity(
+                user_id=current_user.id,
+                file_id=file_obj.id,
+                action="download",
+                details={"filename": file_obj.filename},
+                ip_address=request.remote_addr,
+                user_agent=request.headers.get("User-Agent"),
+            )
+            db.session.add(activity)
+            db.session.commit()
 
-        # Detect MIME type
         mime_type, _ = mimetypes.guess_type(file_path)
         if mime_type is None:
             mime_type = "application/octet-stream"
@@ -654,6 +671,10 @@ def create_app():
             user_stats=user_stats,
             theme=theme,
         )
+
+    # Register WebSocket handlers
+    from .websocket_handlers import register_handlers
+    register_handlers(socketio)
 
     return app
 

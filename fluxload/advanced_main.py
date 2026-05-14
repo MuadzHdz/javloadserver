@@ -209,17 +209,15 @@ def main():
     )
 
     parser.add_argument(
-        "--enable-registration",
+        "--disable-registration",
         action="store_true",
-        default=True,
-        help="Enable user registration.\n[default: enabled]",
+        help="Disable user registration.\n[default: enabled]",
     )
 
     parser.add_argument(
-        "--enable-file-sharing",
+        "--disable-file-sharing",
         action="store_true",
-        default=True,
-        help="Enable file sharing features.\n[default: enabled]",
+        help="Disable file sharing features.\n[default: enabled]",
     )
 
     parser.add_argument(
@@ -257,17 +255,39 @@ def main():
 
     args = parser.parse_args()
 
-    # Create app
-    app = create_app()
+    enable_registration = not args.disable_registration
+    enable_file_sharing = not args.disable_file_sharing
+
+    if not os.path.isdir(args.directory):
+        print(f"Error: Directory '{args.directory}' does not exist.")
+        sys.exit(1)
+
+    # Apply --password to the global BEFORE create_app so login route picks it up
+    if args.password:
+        from getpass import getpass
+
+        if args.password == "prompt":
+            try:
+                PASSWORD_GLOBAL = getpass("Enter admin password: ")
+            except (EOFError, KeyboardInterrupt):
+                print("\nPassword entry cancelled. Shutting down.")
+                sys.exit(0)
+        else:
+            PASSWORD_GLOBAL = args.password
+        from fluxload import advanced_server as _as
+        _as.PASSWORD = PASSWORD_GLOBAL
+
+    # Create app with proper config
+    app = create_app(
+        directory=args.directory,
+        database_url=args.database_url,
+    )
 
     # Configure app with command line args
     app.config["MAX_CONTENT_LENGTH"] = parse_size(args.max_upload_size)
     app.config["DEFAULT_QUOTA"] = parse_size(args.storage_quota)
-    app.config["ENABLE_REGISTRATION"] = args.enable_registration
-    app.config["ENABLE_FILE_SHARING"] = args.enable_file_sharing
-
-    if args.database_url:
-        app.config["SQLALCHEMY_DATABASE_URI"] = args.database_url
+    app.config["ENABLE_REGISTRATION"] = enable_registration
+    app.config["ENABLE_FILE_SHARING"] = enable_file_sharing
 
     # Override system settings with command line args
     with app.app_context():
@@ -277,12 +297,16 @@ def main():
                 "admin_email": args.admin_email,
                 "max_file_size": args.max_upload_size,
                 "default_quota": args.storage_quota,
-                "enable_registration": args.enable_registration,
-                "enable_file_sharing": args.enable_file_sharing,
+                "enable_registration": enable_registration,
+                "enable_file_sharing": enable_file_sharing,
                 "redis_url": args.redis_url,
                 "elasticsearch_url": args.elasticsearch_url,
             }
         )
+
+        # Reload settings into app.config so templates pick up CLI overrides
+        for s in SystemSettings.query.all():
+            app.config[s.key] = s.value
 
         # Initialize search index
         print("🔍 Initializing search index...")
@@ -292,20 +316,8 @@ def main():
         except Exception as e:
             print(f"⚠️  Warning: Could not initialize search index: {e}")
 
-    # Setup password if provided
+    # Setup admin user in DB if password is set
     if args.password:
-        from getpass import getpass
-
-        if args.password == "prompt":
-            try:
-                admin_password = getpass("Enter admin password: ")
-            except (EOFError, KeyboardInterrupt):
-                print("\nPassword entry cancelled. Shutting down.")
-                sys.exit(0)
-        else:
-            admin_password = args.password
-
-        # Create or update admin user
         from fluxload.models import User
 
         with app.app_context():
@@ -318,12 +330,12 @@ def main():
                     role="admin",
                     storage_quota=parse_size(args.storage_quota),
                 )
-                admin_user.set_password(admin_password)
+                admin_user.set_password(PASSWORD_GLOBAL)
                 db.session.add(admin_user)
                 db.session.commit()
                 print("✅ Admin user created successfully")
             else:
-                admin_user.set_password(admin_password)
+                admin_user.set_password(PASSWORD_GLOBAL)
                 db.session.commit()
                 print("✅ Admin password updated")
 
@@ -344,8 +356,8 @@ def main():
    Dev Mode: {args.dev_mode}
 
 🔧 Features Enabled:
-   User Registration: {"✅" if args.enable_registration else "❌"}
-   File Sharing: {"✅" if args.enable_file_sharing else "❌"}
+   User Registration: {"✅" if enable_registration else "❌"}
+   File Sharing: {"✅" if enable_file_sharing else "❌"}
    Search Engine: ✅
    Real-time Collaboration: ✅
    Multi-user Support: ✅
@@ -378,6 +390,41 @@ def main():
         print("\n📱 Install 'qrcode[pil]' for QR code support: pip install qrcode[pil]")
     except Exception as e:
         print(f"\n⚠️  Could not generate QR code: {e}")
+
+    # Configure Redis session storage if URL provided
+    if args.redis_url:
+        try:
+            import redis as redis_module
+            from flask_session import Session
+
+            app.config["SESSION_TYPE"] = "redis"
+            app.config["SESSION_REDIS"] = redis_module.from_url(args.redis_url)
+            app.config["SESSION_PERMANENT"] = False
+            app.config["SESSION_USE_SIGNER"] = True
+            Session(app)
+            print(f"✅ Redis session storage configured at {args.redis_url}")
+        except ImportError:
+            print(
+                "⚠️  Flask-Session or redis not installed. Run: pip install Flask-Session redis"
+            )
+        except Exception as e:
+            print(f"⚠️  Failed to configure Redis session storage: {e}")
+
+    # Configure Elasticsearch search if URL provided
+    if args.elasticsearch_url:
+        try:
+            from elasticsearch import Elasticsearch
+
+            es_client = Elasticsearch(args.elasticsearch_url)
+            if es_client.ping():
+                print(f"✅ Elasticsearch connected at {args.elasticsearch_url}")
+                app.config["ELASTICSEARCH_CLIENT"] = es_client
+            else:
+                print(f"⚠️  Could not connect to Elasticsearch at {args.elasticsearch_url}")
+        except ImportError:
+            print("⚠️  elasticsearch-py not installed. Run: pip install elasticsearch")
+        except Exception as e:
+            print(f"⚠️  Failed to connect Elasticsearch: {e}")
 
     # Setup background tasks
     file_monitor = setup_background_tasks(app)
@@ -420,16 +467,10 @@ def main():
         else:
             # Production server
             if args.workers > 1:
-                # Use gunicorn or uwsgi in production
-                print("⚠️  For production with multiple workers, use:")
+                print("⚠️  Multi-worker mode requires gunicorn; falling back to threaded mode.")
                 print(
-                    f"   gunicorn -w {args.workers} -b {args.bind}:{args.port} fluxload.advanced_server:app"
+                    f"   For production: gunicorn -w {args.workers} -b {args.bind}:{args.port} fluxload.advanced_server:app"
                 )
-                print("   Or")
-                print(
-                    f"   uwsgi --http :{args.port} --wsgi-file wsgi.py --processes {args.workers}"
-                )
-                return
 
             app.run(host=args.bind, port=args.port, debug=args.debug, threaded=True)
 

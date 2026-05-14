@@ -1,3 +1,2 @@
 graft fluxload/static
 graft fluxload/templates
-include fluxload/py.typed
