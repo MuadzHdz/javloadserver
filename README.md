@@ -14,6 +14,14 @@ A modern file sharing server with two modes: a simple single-user server and an 
 
 ## Quick Start
 
+### Install from PyPI (Recommended)
+
+```bash
+pip install fluxload
+```
+
+### Or from source
+
 ```bash
 git clone https://github.com/muadzhdz/fluxload.git
 cd fluxload
@@ -23,20 +31,15 @@ pip install -r requirements.txt
 ### Basic Mode (Simple file sharing)
 
 ```bash
-python -m fluxload -d /path/to/share
+fluxload -d /path/to/share
+# or: python -m fluxload -d /path/to/share
 ```
 
 ### Advanced Mode (Multi-user, admin, search, etc.)
 
-Run directly (no install needed):
 ```bash
-python -m fluxload.advanced_main --dev-mode -d /path/to/share
-```
-
-Or install the package to use the `fluxload` command:
-```bash
-pip install -e .
 fluxload --dev-mode -d /path/to/share
+# or: python -m fluxload.advanced_main --dev-mode -d /path/to/share
 ```
 
 ---
