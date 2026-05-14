@@ -70,7 +70,7 @@ SEARCH_ENGINE = SearchEngine()
 
 login_manager = LoginManager()
 
-socketio = SocketIO(cors_allowed_origins=os.getenv("CORS_ORIGINS", "localhost,127.0.0.1"))
+socketio = SocketIO(cors_allowed_origins=os.getenv("CORS_ORIGINS", "*"))
 
 
 @login_manager.user_loader
