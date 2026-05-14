@@ -453,13 +453,10 @@ def main():
     try:
         if args.dev_mode:
             # Development server with auto-reload
-            from werkzeug.middleware.profiler import ProfilerMiddleware
-
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
             app.run(
                 host=args.bind,
                 port=args.port,
-                debug=args.debug,
+                debug=args.debug if args.debug else True,
                 use_reloader=True,
                 threaded=True,
             )
