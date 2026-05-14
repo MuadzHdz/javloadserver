@@ -1,6 +1,6 @@
 <div align="center">
 
-# fluxload (Python Version)
+# FluxLoad (Python Version)
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python)
 ![Flask](https://img.shields.io/badge/Flask-3.0+-lightgrey.svg?style=for-the-badge&logo=flask)
@@ -15,7 +15,7 @@ A modern file sharing server with two modes: a simple single-user server and an 
 ## Quick Start
 
 ```bash
-git clone https://github.com/MuadzHdz/fluxload.git
+git clone https://github.com/muadzhdz/fluxload.git
 cd fluxload
 pip install -r requirements.txt
 ```
