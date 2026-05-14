@@ -1,5 +1,7 @@
 package com.fluxload.service;
 
+import com.fluxload.FluxLoadApplication;
+
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,7 +18,10 @@ public class SystemInfoService {
     private final Path baseDirectory;
 
     public SystemInfoService() {
-        this.baseDirectory = Paths.get(System.getProperty("user.dir"));
+        var config = FluxLoadApplication.getServerConfig();
+        this.baseDirectory = Paths.get(
+            config != null ? config.getDirectory() : System.getProperty("user.dir")
+        );
     }
 
     public Map<String, Object> getSystemInfo() {

@@ -30,8 +30,8 @@ public class SecurityConfig {
         if (serverConfig.hasPassword()) {
             http
                 .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/login", "/static/**", "/css/**", "/js/**", "/health", "/api", "/api/**", 
-                                    "/upload/chunk/**", "/upload").permitAll()
+                    .requestMatchers("/login", "/logout", "/static/**", "/css/**", "/js/**", "/health", "/api", "/api/**", 
+                                    "/upload/chunk/**", "/upload", "/preview-page", "/preview").permitAll()
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -42,9 +42,11 @@ public class SecurityConfig {
                 .logout(logout -> logout
                     .logoutUrl("/logout")
                     .logoutSuccessUrl("/login?logout")
+                    .logoutRequestMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/logout", "GET"))
                     .permitAll()
                     .clearAuthentication(true)
                     .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
                 )
                 .sessionManagement(session -> session
                     .maximumSessions(1)
@@ -52,7 +54,7 @@ public class SecurityConfig {
                     .sessionRegistry(sessionRegistry())
                 )
                 .csrf(csrf -> csrf
-                    .ignoringRequestMatchers("/upload", "/api/**")
+                    .ignoringRequestMatchers("/upload", "/delete", "/delete-dir", "/rename", "/mkdir", "/api/**")
                 );
         } else {
             http
@@ -63,7 +65,7 @@ public class SecurityConfig {
                     .disable()
                 )
                 .csrf(csrf -> csrf
-                    .ignoringRequestMatchers("/upload", "/api/**")
+                    .ignoringRequestMatchers("/upload", "/delete", "/delete-dir", "/rename", "/mkdir", "/api/**")
                 );
         }
 

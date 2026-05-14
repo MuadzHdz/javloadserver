@@ -190,7 +190,9 @@ public class FileService {
     }
 
     private void validatePath(Path path) {
-        if (!path.startsWith(baseDirectory)) {
+        Path normalizedBase = baseDirectory.normalize().toAbsolutePath();
+        Path normalizedPath = path.normalize().toAbsolutePath();
+        if (!normalizedPath.startsWith(normalizedBase)) {
             throw new SecurityException("Access denied: Path is outside base directory");
         }
     }
@@ -387,6 +389,106 @@ public class FileService {
         }
 
         return filename;
+    }
+
+    public boolean deleteFile(String relativePath) throws IOException {
+        Path targetPath = baseDirectory.resolve(relativePath).normalize();
+        validatePath(targetPath);
+
+        if (!Files.exists(targetPath)) {
+            throw new IllegalArgumentException("File not found: " + relativePath);
+        }
+
+        if (Files.isDirectory(targetPath)) {
+            try (var stream = Files.list(targetPath)) {
+                if (stream.findAny().isPresent()) {
+                    throw new IOException("Directory is not empty: " + relativePath);
+                }
+            }
+            return Files.deleteIfExists(targetPath);
+        } else {
+            return Files.deleteIfExists(targetPath);
+        }
+    }
+
+    public boolean deleteDirectory(String relativePath) throws IOException {
+        Path targetPath = baseDirectory.resolve(relativePath).normalize();
+        validatePath(targetPath);
+
+        if (!Files.exists(targetPath) || !Files.isDirectory(targetPath)) {
+            throw new IllegalArgumentException("Directory not found: " + relativePath);
+        }
+
+        try (var stream = Files.walk(targetPath)) {
+            stream.sorted(java.util.Comparator.reverseOrder())
+                 .forEach(p -> {
+                     try {
+                         Files.deleteIfExists(p);
+                     } catch (IOException e) {
+                         throw new RuntimeException("Failed to delete: " + p, e);
+                     }
+                 });
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw e;
+        }
+
+        return true;
+    }
+
+    public String renameFile(String relativePath, String newName) throws IOException {
+        String sanitizedNewName = sanitizeFilename(newName);
+        if (sanitizedNewName.isEmpty()) {
+            throw new IllegalArgumentException("Invalid new name");
+        }
+
+        if (isPotentiallyDangerousFile(sanitizedNewName)) {
+            throw new IllegalArgumentException("File name not allowed for security reasons");
+        }
+
+        Path sourcePath = baseDirectory.resolve(relativePath).normalize();
+        validatePath(sourcePath);
+
+        if (!Files.exists(sourcePath)) {
+            throw new IllegalArgumentException("File not found: " + relativePath);
+        }
+
+        Path parentDir = sourcePath.getParent();
+        Path targetPath = parentDir.resolve(sanitizedNewName).normalize();
+        validatePath(targetPath);
+
+        if (Files.exists(targetPath)) {
+            throw new IOException("Target already exists: " + sanitizedNewName);
+        }
+
+        Files.move(sourcePath, targetPath, StandardCopyOption.ATOMIC_MOVE);
+        return sanitizedNewName;
+    }
+
+    public String createDirectory(String relativePath, String dirName) throws IOException {
+        String sanitizedName = sanitizeFilename(dirName);
+        if (sanitizedName.isEmpty()) {
+            throw new IllegalArgumentException("Invalid directory name");
+        }
+
+        if (isPotentiallyDangerousFile(sanitizedName)) {
+            throw new IllegalArgumentException("Directory name not allowed for security reasons");
+        }
+
+        Path targetDir = baseDirectory.resolve(relativePath).normalize();
+        validatePath(targetDir);
+
+        Path newDir = targetDir.resolve(sanitizedName).normalize();
+        validatePath(newDir);
+
+        if (Files.exists(newDir)) {
+            throw new IOException("Directory already exists: " + sanitizedName);
+        }
+
+        Files.createDirectories(newDir);
+        return sanitizedName;
     }
 
     public Path getBaseDirectory() {

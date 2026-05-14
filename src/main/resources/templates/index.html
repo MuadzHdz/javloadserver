@@ -18,6 +18,11 @@
     <div class="container">
         <header>
             <h1>FluxLoad</h1>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+                <button onclick="location.href='/logout'" class="btn" style="padding:0.4rem 0.8rem;font-size:0.85rem;">
+                    <span class="material-icons" style="font-size:1rem;">logout</span> Logout
+                </button>
+            </div>
         </header>
 
         <div id="color-palette-display" class="color-palette-display"></div>
@@ -25,21 +30,57 @@
         <main>
             <div class="file-list-section">
                 <h2>/<span th:text="${current_path}"></span></h2>
+
+                <!-- Create Directory Form -->
+                <form th:action="@{/mkdir(path=${current_path})}" method="post" class="mkdir-form">
+                    <input type="text" name="dirName" placeholder="New folder name" required class="mkdir-input">
+                    <button type="submit" class="btn" style="padding:0.4rem 0.8rem;font-size:0.85rem;">
+                        <span class="material-icons" style="font-size:1rem;">create_new_folder</span> New Folder
+                    </button>
+                </form>
+
                 <ul>
                     <li th:if="${parent_dir != null}" class="parent-dir">
-                        <a th:href="@{/browse(path=${parent_dir})}">
-                            <span class="material-icons">folder_open</span>&nbsp;&nbsp;&nbsp;<span>..</span>
+                        <a th:href="@{/browse(path=${parent_dir})}" class="file-link">
+                            <span class="material-icons">folder_open</span>
+                            <span>..</span>
                         </a>
                     </li>
                     <li th:each="dir : ${dirs}">
-                        <a th:href="@{/browse(path=${#strings.isEmpty(current_path) ? dir : current_path + '/' + dir})}">
-                            <span class="material-icons">folder</span>&nbsp;&nbsp;&nbsp;<span th:text="${dir}"></span>
-                        </a>
+                        <div class="file-row">
+                            <a th:href="@{/browse(path=${#strings.isEmpty(current_path) ? dir : current_path + '/' + dir})}" class="file-link">
+                                <span class="material-icons">folder</span>
+                                <span th:text="${dir}"></span>
+                            </a>
+                            <div class="file-actions">
+                                <form th:action="@{/delete-dir(dirname=${#strings.isEmpty(current_path) ? dir : current_path + '/' + dir}, path=${current_path})}" method="post" style="display:inline;" onsubmit="return confirm('Delete directory &quot;' + '${dir}' + '&quot; and all its contents?')">
+                                    <button type="submit" class="action-btn delete-btn" title="Delete">
+                                        <span class="material-icons">delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </li>
                     <li th:each="file : ${files}">
-                        <a th:href="@{/download(filename=${#strings.isEmpty(current_path) ? file : current_path + '/' + file})}">
-                            <span class="material-icons">description</span>&nbsp;&nbsp;<span th:text="${file}"></span>
-                        </a>
+                        <div class="file-row">
+                            <a th:href="@{/download(filename=${#strings.isEmpty(current_path) ? file : current_path + '/' + file})}" class="file-link">
+                                <span class="material-icons">description</span>
+                                <span th:text="${file}"></span>
+                            </a>
+                            <div class="file-actions">
+                                <a th:href="@{/preview-page(filename=${#strings.isEmpty(current_path) ? file : current_path + '/' + file})}" class="action-btn preview-btn" title="Preview">
+                                    <span class="material-icons">visibility</span>
+                                </a>
+                                <button onclick="openRenameModal('${file}', '${current_path}')" class="action-btn rename-btn" title="Rename">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <form th:action="@{/delete(filename=${#strings.isEmpty(current_path) ? file : current_path + '/' + file}, path=${current_path})}" method="post" style="display:inline;" onsubmit="return confirm('Delete &quot;' + '${file}' + '&quot;?')">
+                                    <button type="submit" class="action-btn delete-btn" title="Delete">
+                                        <span class="material-icons">delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </li>
                 </ul>
                 <p th:if="${#lists.isEmpty(files) and #lists.isEmpty(dirs) and parent_dir == null}">Directory is empty.</p>
@@ -62,7 +103,6 @@
                     </button>
                 </form>
 
-                <!-- Progress Bar -->
                 <div id="upload-progress-container" style="display: none;">
                     <div class="progress-info">
                         <span id="progress-filename">Uploading...</span>
@@ -89,11 +129,44 @@
                 </div>
             </div>
         </main>
-        
+
         <footer>
             <p>Powered by <a href="https://github.com/MuadzHdz/FluxLoad" target="_blank">MuadzHdz</a></p>
         </footer>
     </div>
+
+    <!-- Rename Modal -->
+    <div id="rename-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeRenameModal()">&times;</span>
+            <h2>Rename</h2>
+            <form id="rename-form" method="post" style="display:flex;gap:0.5rem;margin-top:1rem;">
+                <input type="text" name="newName" id="rename-input" required style="flex:1;">
+                <button type="submit" class="btn">Rename</button>
+            </form>
+        </div>
+    </div>
+
     <script th:src="@{/js/script.js}"></script>
+    <script>
+        function openRenameModal(filename, currentPath) {
+            document.getElementById('rename-input').value = filename;
+            var form = document.getElementById('rename-form');
+            form.action = '/rename?filename=' + encodeURIComponent(currentPath ? currentPath + '/' + filename : filename) + '&path=' + encodeURIComponent(currentPath);
+            document.getElementById('rename-modal').style.display = 'flex';
+        }
+
+        function closeRenameModal() {
+            document.getElementById('rename-modal').style.display = 'none';
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            var modal = document.getElementById('rename-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

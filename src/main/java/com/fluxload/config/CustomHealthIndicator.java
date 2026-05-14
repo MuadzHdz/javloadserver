@@ -1,6 +1,7 @@
 package com.fluxload.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.fluxload.FluxLoadApplication;
+
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
@@ -10,13 +11,12 @@ import java.io.File;
 @Component
 public class CustomHealthIndicator implements HealthIndicator {
 
-    @Value("${server.upload.directory:}")
-    private String uploadDirectory;
-
     @Override
     public Health health() {
         try {
-            File directory = new File(uploadDirectory.isEmpty() ? System.getProperty("user.dir") : uploadDirectory);
+            var config = FluxLoadApplication.getServerConfig();
+            String dir = config != null ? config.getDirectory() : System.getProperty("user.dir");
+            File directory = new File(dir);
             
             // Check if directory exists and is writable
             boolean exists = directory.exists() && directory.isDirectory();

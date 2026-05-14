@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -27,7 +28,14 @@ public class FileController {
     protected final FileService fileService;
 
     public FileController() {
-        this.fileService = new FileService(FluxLoadApplication.getServerConfig().getDirectory());
+        var config = FluxLoadApplication.getServerConfig();
+        this.fileService = new FileService(
+            config != null ? config.getDirectory() : System.getProperty("user.dir")
+        );
+    }
+
+    public FileController(FileService fileService) {
+        this.fileService = fileService;
     }
 
     @GetMapping("/")
@@ -40,6 +48,15 @@ public class FileController {
         if (path == null) path = "";
 
         if (!fileService.directoryExists(path)) {
+            if (path.isEmpty()) {
+                model.addAttribute("error", "Error: Base directory does not exist or is inaccessible.");
+                model.addAttribute("files", List.of());
+                model.addAttribute("dirs", List.of());
+                model.addAttribute("current_path", "");
+                model.addAttribute("parent_dir", null);
+                model.addAttribute("theme", getThemeFromCookie(request));
+                return "index";
+            }
             model.addAttribute("error", "Error: Invalid or inaccessible directory.");
             return "redirect:/browse";
         }
@@ -139,6 +156,103 @@ public class FileController {
                 .body(new org.springframework.core.io.FileSystemResource(filePath.toFile()));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @PostMapping("/delete")
+    public String deleteFile(@RequestParam String filename,
+                             @RequestParam(required = false) String path,
+                             RedirectAttributes redirectAttributes) {
+        if (path == null) path = "";
+        try {
+            fileService.deleteFile(filename);
+            redirectAttributes.addFlashAttribute("success",
+                "File \"" + Path.of(filename).getFileName() + "\" deleted successfully!");
+        } catch (IOException | IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/browse?path=" + path;
+    }
+
+    @PostMapping("/delete-dir")
+    public String deleteDirectory(@RequestParam String dirname,
+                                  @RequestParam(required = false) String path,
+                                  RedirectAttributes redirectAttributes) {
+        if (path == null) path = "";
+        try {
+            fileService.deleteDirectory(dirname);
+            redirectAttributes.addFlashAttribute("success",
+                "Directory \"" + Path.of(dirname).getFileName() + "\" deleted successfully!");
+        } catch (IOException | IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/browse?path=" + path;
+    }
+
+    @PostMapping("/rename")
+    public String renameFile(@RequestParam String filename,
+                             @RequestParam String newName,
+                             @RequestParam(required = false) String path,
+                             RedirectAttributes redirectAttributes) {
+        if (path == null) path = "";
+        try {
+            fileService.renameFile(filename, newName);
+            redirectAttributes.addFlashAttribute("success",
+                "Renamed \"" + Path.of(filename).getFileName() + "\" to \"" + newName + "\" successfully!");
+        } catch (IOException | IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/browse?path=" + path;
+    }
+
+    @PostMapping("/mkdir")
+    public String createDirectory(@RequestParam String dirName,
+                                  @RequestParam(required = false) String path,
+                                  RedirectAttributes redirectAttributes) {
+        if (path == null) path = "";
+        try {
+            fileService.createDirectory(path, dirName);
+            redirectAttributes.addFlashAttribute("success",
+                "Directory \"" + dirName + "\" created successfully!");
+        } catch (IOException | IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/browse?path=" + path;
+    }
+
+    @GetMapping("/preview-page")
+    public String previewPage(@RequestParam String filename, Model model, HttpServletRequest request) {
+        try {
+            Path filePath = fileService.getFilePath(filename);
+            String originalFilename = filePath.getFileName().toString();
+            String contentType = getSpecificContentType(originalFilename);
+            long fileSize = Files.size(filePath);
+            boolean isImage = contentType.startsWith("image/");
+            boolean isText = contentType.startsWith("text/") || contentType.equals("application/json")
+                || contentType.equals("application/xml");
+
+            String content = null;
+            if (isText && fileSize < 1024 * 1024) {
+                try {
+                    content = Files.readString(filePath);
+                } catch (IOException e) {
+                    content = null;
+                }
+            }
+
+            String theme = getThemeFromCookie(request);
+            model.addAttribute("filename", originalFilename);
+            model.addAttribute("fileSize", fileSize);
+            model.addAttribute("mimeType", contentType);
+            model.addAttribute("isImage", isImage);
+            model.addAttribute("isText", isText);
+            model.addAttribute("content", content);
+            model.addAttribute("theme", theme);
+            return "preview";
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading file: " + e.getMessage());
         }
     }
 

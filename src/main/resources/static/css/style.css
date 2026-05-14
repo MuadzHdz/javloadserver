@@ -1173,6 +1173,115 @@ footer a:hover {
 
 
 
+/* File row with actions */
+.file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.5rem;
+    border-radius: var(--border-radius);
+    transition: background var(--transition-speed);
+}
+.file-row:hover {
+    background: var(--overlay);
+}
+.file-row .file-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.file-row .file-link span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.file-actions {
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+}
+.file-row:hover .file-actions {
+    opacity: 1;
+}
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--subtle);
+    transition: color var(--transition-speed), background var(--transition-speed);
+}
+.action-btn:hover {
+    color: var(--fg);
+    background: var(--overlay);
+}
+.delete-btn:hover { color: var(--error) !important; }
+.rename-btn:hover { color: var(--accent) !important; }
+.preview-btn:hover { color: var(--primary) !important; }
+
+/* Mkdir form */
+.mkdir-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--overlay);
+    border-radius: var(--border-radius);
+}
+.mkdir-input {
+    flex: 1;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--overlay);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--fg);
+    font-size: 0.9rem;
+}
+.mkdir-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background: var(--surface);
+    border: 1px solid var(--overlay);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+}
+.modal-close {
+    float: right;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--subtle);
+}
+.modal-close:hover { color: var(--fg); }
+
 @media print {
     .theme-switcher,
     .upload-section,

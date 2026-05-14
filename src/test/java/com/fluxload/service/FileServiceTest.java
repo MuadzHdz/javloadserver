@@ -177,4 +177,56 @@ class FileServiceTest {
         assertTrue(Files.exists(tempDir.resolve("duplicate.txt")));
         assertTrue(Files.exists(tempDir.resolve("duplicate_1.txt")));
     }
+
+    @Test
+    void testDeleteFile() throws IOException {
+        Path testFile = tempDir.resolve("delete_me.txt");
+        Files.write(testFile, "to be deleted".getBytes());
+        assertTrue(Files.exists(testFile));
+
+        boolean result = fileService.deleteFile("delete_me.txt");
+        assertTrue(result);
+        assertFalse(Files.exists(testFile));
+    }
+
+    @Test
+    void testRenameFile() throws IOException {
+        Path testFile = tempDir.resolve("old_name.txt");
+        Files.write(testFile, "rename test".getBytes());
+
+        String newName = fileService.renameFile("old_name.txt", "new_name.txt");
+        assertEquals("new_name.txt", newName);
+        assertFalse(Files.exists(tempDir.resolve("old_name.txt")));
+        assertTrue(Files.exists(tempDir.resolve("new_name.txt")));
+    }
+
+    @Test
+    void testCreateDirectory() throws IOException {
+        String dirName = fileService.createDirectory("", "new_directory");
+        assertEquals("new_directory", dirName);
+        assertTrue(Files.exists(tempDir.resolve("new_directory")));
+        assertTrue(Files.isDirectory(tempDir.resolve("new_directory")));
+    }
+
+    @Test
+    void testCreateDirectoryAlreadyExists() throws IOException {
+        Files.createDirectory(tempDir.resolve("exists"));
+        assertThrows(IOException.class, () -> {
+            fileService.createDirectory("", "exists");
+        });
+    }
+
+    @Test
+    void testRenameNonExistentFile() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            fileService.renameFile("nonexistent.txt", "new.txt");
+        });
+    }
+
+    @Test
+    void testDeleteNonExistentFile() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            fileService.deleteFile("nonexistent.txt");
+        });
+    }
 }
