@@ -539,7 +539,9 @@ h2, h3 {
     padding-bottom: 0.5rem;
     margin: 0 0 1rem 0;
     font-weight: normal;
+    transition: color var(--transition-speed), border-bottom var(--transition-speed);
     width: 100%;
+    text-align: center;
 }
 
 .file-item {
@@ -618,9 +620,7 @@ h2, h3 {
 .file-list-section a span {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: break-word;
 }
 
 .file-list-section a:hover {
