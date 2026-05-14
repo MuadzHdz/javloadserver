@@ -90,5 +90,5 @@ Buka IP tersebut di browser laptop atau HP mana pun yang terhubung ke jaringan y
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 Project ini berada di bawah lisensi MIT. Lihat file `LICENSE` untuk detailnya.
